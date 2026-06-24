@@ -1,4 +1,5 @@
 export type {
+  AuthUser,
   LoginRequest,
   LoginResponse,
   RefreshTokenPayload,

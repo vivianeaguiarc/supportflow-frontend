@@ -15,16 +15,30 @@ export const tokenStorage = {
     return localStorage.getItem(AUTH_STORAGE_KEYS.refreshToken);
   },
 
+  setAccessToken(accessToken: string): void {
+    if (!isBrowser()) return;
+    localStorage.setItem(AUTH_STORAGE_KEYS.accessToken, accessToken);
+  },
+
   setTokens(accessToken: string, refreshToken: string): void {
     if (!isBrowser()) return;
     localStorage.setItem(AUTH_STORAGE_KEYS.accessToken, accessToken);
     localStorage.setItem(AUTH_STORAGE_KEYS.refreshToken, refreshToken);
   },
 
+  clearAccessToken(): void {
+    if (!isBrowser()) return;
+    localStorage.removeItem(AUTH_STORAGE_KEYS.accessToken);
+  },
+
   clearTokens(): void {
     if (!isBrowser()) return;
     localStorage.removeItem(AUTH_STORAGE_KEYS.accessToken);
     localStorage.removeItem(AUTH_STORAGE_KEYS.refreshToken);
+  },
+
+  hasAccessToken(): boolean {
+    return Boolean(this.getAccessToken());
   },
 
   hasTokens(): boolean {

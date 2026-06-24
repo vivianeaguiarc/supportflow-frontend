@@ -1,7 +1,8 @@
 "use client";
 
-import { LifeBuoy } from "lucide-react";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LifeBuoy, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,17 +12,33 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
-import { LOGIN_FIELDS } from "../schemas";
+import { useLogin } from "../hooks";
+import { LOGIN_FIELDS, type LoginFormValues, loginSchema } from "../schemas";
 
 export function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { login, isLoading, errorMessage, reset } = useLogin();
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  function onSubmit(values: LoginFormValues) {
+    reset();
+    login(values);
   }
 
   return (
@@ -38,47 +55,66 @@ export function LoginForm() {
         </div>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <Label htmlFor={LOGIN_FIELDS.email.name}>
-              {LOGIN_FIELDS.email.label}
-            </Label>
-            <Input
-              id={LOGIN_FIELDS.email.name}
+        <Form {...form}>
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
               name={LOGIN_FIELDS.email.name}
-              type="email"
-              autoComplete="email"
-              placeholder="agente@supportflow.com"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{LOGIN_FIELDS.email.label}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      autoComplete="email"
+                      placeholder={LOGIN_FIELDS.email.placeholder}
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={LOGIN_FIELDS.password.name}>
-              {LOGIN_FIELDS.password.label}
-            </Label>
-            <Input
-              id={LOGIN_FIELDS.password.name}
+            <FormField
+              control={form.control}
               name={LOGIN_FIELDS.password.name}
-              type="password"
-              autoComplete="current-password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{LOGIN_FIELDS.password.label}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      autoComplete="current-password"
+                      placeholder={LOGIN_FIELDS.password.placeholder}
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <Button className="w-full" type="submit" disabled>
-            Entrar
-          </Button>
+            {errorMessage ? (
+              <p className="text-sm text-destructive" role="alert">
+                {errorMessage}
+              </p>
+            ) : null}
 
-          <p className="text-center text-xs text-muted-foreground">
-            Autenticação será habilitada na próxima etapa.
-          </p>
-        </form>
+            <Button className="w-full" type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Entrando...
+                </>
+              ) : (
+                "Entrar"
+              )}
+            </Button>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );

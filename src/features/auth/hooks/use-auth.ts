@@ -1,9 +1,9 @@
-import type { User } from "../types";
+import type { AuthUser } from "../types";
 
 export function useAuth() {
   return {
     isAuthenticated: false,
-    user: null as User | null,
+    user: null as AuthUser | null,
     isLoading: false,
   };
 }

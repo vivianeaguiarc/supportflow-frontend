@@ -1,25 +1,30 @@
-import type {
-  LoginRequest,
-  LoginResponse,
-  RefreshTokenPayload,
-} from "../types";
+import { tokenStorage } from "@/lib/auth/token-storage";
+import { httpClient } from "@/services/http-client";
+import type { ApiSuccessResponse } from "@/types/api";
+
+import type { LoginRequest, LoginResponse } from "../types";
 
 export const authService = {
-  async login(credentials: LoginRequest): Promise<LoginResponse> {
-    void credentials;
-    throw new Error("authService.login ainda não foi implementado.");
-  },
+  async login(payload: LoginRequest): Promise<LoginResponse> {
+    const response = await httpClient<ApiSuccessResponse<LoginResponse>>(
+      "/auth/login",
+      {
+        method: "POST",
+        body: payload,
+        auth: false,
+      },
+    );
 
-  async refresh(payload: RefreshTokenPayload): Promise<LoginResponse> {
-    void payload;
-    throw new Error("authService.refresh ainda não foi implementado.");
+    tokenStorage.setAccessToken(response.data.accessToken);
+
+    return response.data;
   },
 
   logout(): void {
-    // Será integrado com tokenStorage na próxima etapa.
+    tokenStorage.clearAccessToken();
   },
 
   isAuthenticated(): boolean {
-    return false;
+    return tokenStorage.hasAccessToken();
   },
 };

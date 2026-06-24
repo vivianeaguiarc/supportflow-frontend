@@ -1,4 +1,4 @@
-export interface User {
+export interface AuthUser {
   id: string;
   email: string;
   name: string;
@@ -12,10 +12,12 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   accessToken: string;
-  refreshToken: string;
-  user: User;
+  user: AuthUser;
 }
 
 export interface RefreshTokenPayload {
   refreshToken: string;
 }
+
+/** @deprecated Use AuthUser instead */
+export type User = AuthUser;

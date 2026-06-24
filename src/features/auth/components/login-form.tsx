@@ -1,7 +1,6 @@
 "use client";
 
 import { LifeBuoy } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -14,33 +13,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authService } from "@/services/auth.service";
-import { ApiError } from "@/types/api";
+
+import { LOGIN_FIELDS } from "../schemas";
 
 export function LoginForm() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError(null);
-    setIsSubmitting(true);
-
-    try {
-      await authService.login({ email, password });
-      router.push("/dashboard");
-    } catch (err) {
-      const message =
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível realizar o login.";
-      setError(message);
-    } finally {
-      setIsSubmitting(false);
-    }
   }
 
   return (
@@ -59,9 +40,12 @@ export function LoginForm() {
       <CardContent>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
+            <Label htmlFor={LOGIN_FIELDS.email.name}>
+              {LOGIN_FIELDS.email.label}
+            </Label>
             <Input
-              id="email"
+              id={LOGIN_FIELDS.email.name}
+              name={LOGIN_FIELDS.email.name}
               type="email"
               autoComplete="email"
               placeholder="agente@supportflow.com"
@@ -72,9 +56,12 @@ export function LoginForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
+            <Label htmlFor={LOGIN_FIELDS.password.name}>
+              {LOGIN_FIELDS.password.label}
+            </Label>
             <Input
-              id="password"
+              id={LOGIN_FIELDS.password.name}
+              name={LOGIN_FIELDS.password.name}
               type="password"
               autoComplete="current-password"
               placeholder="••••••••"
@@ -84,15 +71,13 @@ export function LoginForm() {
             />
           </div>
 
-          {error ? (
-            <p className="text-sm text-destructive" role="alert">
-              {error}
-            </p>
-          ) : null}
-
-          <Button className="w-full" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Entrando..." : "Entrar"}
+          <Button className="w-full" type="submit" disabled>
+            Entrar
           </Button>
+
+          <p className="text-center text-xs text-muted-foreground">
+            Autenticação será habilitada na próxima etapa.
+          </p>
         </form>
       </CardContent>
     </Card>

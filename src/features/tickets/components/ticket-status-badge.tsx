@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import type { TicketStatus } from "@/types/ticket";
+
+import type { TicketStatus } from "../types";
 
 const statusLabels: Record<TicketStatus, string> = {
   OPEN: "Aberto",

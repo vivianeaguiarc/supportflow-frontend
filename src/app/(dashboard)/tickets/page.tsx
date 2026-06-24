@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { AppShell } from "@/components/layout/app-shell";
-import { TicketsTable } from "@/components/tickets/tickets-table";
+import { TicketsTable } from "@/features/tickets/components";
 
 export const metadata: Metadata = {
   title: "Chamados",

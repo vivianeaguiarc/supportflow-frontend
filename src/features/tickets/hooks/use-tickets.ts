@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { ticketsService } from "@/services/tickets.service";
-import type { ListTicketsParams } from "@/types/ticket";
+import { ticketsService } from "../services";
+import type { ListTicketsParams } from "../types";
 
 export function useTickets(params: ListTicketsParams = {}) {
   return useQuery({

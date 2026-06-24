@@ -5,13 +5,15 @@ import Link from "next/link";
 import { use } from "react";
 
 import { AppShell } from "@/components/layout/app-shell";
-import { TicketPriorityBadge } from "@/components/tickets/ticket-priority-badge";
-import { TicketStatusBadge } from "@/components/tickets/ticket-status-badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTicket } from "@/hooks/use-ticket";
+import {
+  TicketPriorityBadge,
+  TicketStatusBadge,
+} from "@/features/tickets/components";
+import { useTicket } from "@/features/tickets/hooks";
 import { ApiError } from "@/types/api";
 
 function formatDate(value: string | null): string {

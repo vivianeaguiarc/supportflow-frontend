@@ -5,7 +5,7 @@ import { AlertCircle } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTicketsSummary } from "@/hooks/use-tickets-summary";
+import { useTicketsSummary } from "@/features/tickets/hooks";
 import { ApiError } from "@/types/api";
 
 const summaryCards = [

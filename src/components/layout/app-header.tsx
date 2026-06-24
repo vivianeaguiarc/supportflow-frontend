@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { authService } from "@/services/auth.service";
+import { authService } from "@/features/auth/services";
 
 interface AppHeaderProps {
   title: string;

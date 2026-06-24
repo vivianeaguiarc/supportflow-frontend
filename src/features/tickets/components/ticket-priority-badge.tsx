@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import type { TicketPriority } from "@/types/ticket";
+
+import type { TicketPriority } from "../types";
 
 const priorityLabels: Record<TicketPriority, string> = {
   LOW: "Baixa",

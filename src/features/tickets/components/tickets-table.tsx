@@ -3,12 +3,14 @@
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 
-import { TicketPriorityBadge } from "@/components/tickets/ticket-priority-badge";
-import { TicketStatusBadge } from "@/components/tickets/ticket-status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTickets } from "@/hooks/use-tickets";
 import { ApiError } from "@/types/api";
+
+import { useTickets } from "../hooks";
+import { DEFAULT_LIST_TICKETS_PARAMS } from "../schemas";
+import { TicketPriorityBadge } from "./ticket-priority-badge";
+import { TicketStatusBadge } from "./ticket-status-badge";
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -18,12 +20,9 @@ function formatDate(value: string): string {
 }
 
 export function TicketsTable() {
-  const { data, isLoading, isError, error } = useTickets({
-    page: 1,
-    limit: 10,
-    sortBy: "createdAt",
-    sortOrder: "desc",
-  });
+  const { data, isLoading, isError, error } = useTickets(
+    DEFAULT_LIST_TICKETS_PARAMS,
+  );
 
   if (isLoading) {
     return (

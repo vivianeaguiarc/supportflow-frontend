@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { ticketsService } from "@/services/tickets.service";
+import { ticketsService } from "../services";
 
 export function useTicketsSummary() {
   return useQuery({

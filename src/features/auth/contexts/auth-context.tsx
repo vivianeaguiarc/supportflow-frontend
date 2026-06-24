@@ -1,30 +1,20 @@
 "use client";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useSyncExternalStore,
-} from "react";
+import { createContext, type ReactNode, useCallback, useMemo } from "react";
 
+import { sessionService } from "../services";
 import type { AuthUser } from "../types";
-import { authStore } from "./auth-store";
 
-interface AuthSession {
-  user: AuthUser;
-  accessToken: string;
-}
+const SESSION_QUERY_KEY = ["auth", "session"] as const;
 
 export interface AuthContextValue {
   user: AuthUser | null;
-  accessToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  setSession: (session: AuthSession) => void;
-  logout: () => void;
+  setSession: (user: AuthUser) => void;
+  logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -35,38 +25,43 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const snapshot = useSyncExternalStore(
-    authStore.subscribe,
-    authStore.getSnapshot,
-    authStore.getServerSnapshot,
+  const { data, isPending } = useQuery({
+    queryKey: SESSION_QUERY_KEY,
+    queryFn: () => sessionService.getCurrentUser(),
+    retry: false,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
+
+  const user = data ?? null;
+
+  const setSession = useCallback(
+    (nextUser: AuthUser) => {
+      queryClient.setQueryData(SESSION_QUERY_KEY, nextUser);
+    },
+    [queryClient],
   );
 
-  useEffect(() => {
-    if (!authStore.getSnapshot().isHydrated) {
-      authStore.hydrate();
+  const logout = useCallback(async () => {
+    try {
+      await sessionService.logout();
+    } finally {
+      queryClient.setQueryData(SESSION_QUERY_KEY, null);
+      router.replace("/login");
     }
-  }, []);
-
-  const setSession = useCallback((session: AuthSession) => {
-    authStore.setSession(session);
-  }, []);
-
-  const logout = useCallback(() => {
-    authStore.clear();
-    router.replace("/login");
-  }, [router]);
+  }, [queryClient, router]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      user: snapshot.user,
-      accessToken: snapshot.accessToken,
-      isAuthenticated: Boolean(snapshot.user && snapshot.accessToken),
-      isLoading: !snapshot.isHydrated,
+      user,
+      isAuthenticated: Boolean(user),
+      isLoading: isPending,
       setSession,
       logout,
     }),
-    [snapshot, setSession, logout],
+    [user, isPending, setSession, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

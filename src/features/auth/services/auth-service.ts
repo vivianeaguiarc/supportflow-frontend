@@ -1,19 +1,20 @@
 import { httpClient } from "@/services/http-client";
 import type { ApiSuccessResponse } from "@/types/api";
 
-import type { LoginRequest, LoginResponse } from "../types";
+import type { AuthUser, LoginRequest, LoginResponse } from "../types";
 
 export const authService = {
-  async login(payload: LoginRequest): Promise<LoginResponse> {
+  async login(payload: LoginRequest): Promise<AuthUser> {
     const response = await httpClient<ApiSuccessResponse<LoginResponse>>(
-      "/auth/login",
+      "/api/auth/login",
       {
         method: "POST",
         body: payload,
-        auth: false,
+        local: true,
+        skipAuthRefresh: true,
       },
     );
 
-    return response.data;
+    return response.data.user;
   },
 };

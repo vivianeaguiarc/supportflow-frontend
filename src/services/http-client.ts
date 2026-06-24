@@ -1,4 +1,4 @@
-import { tokenStorage } from "@/lib/auth/token-storage";
+import { refreshAccessToken } from "@/lib/auth/refresh-client";
 import { config } from "@/lib/config";
 import type { ApiErrorResponse } from "@/types/api";
 import { ApiError } from "@/types/api";
@@ -6,24 +6,34 @@ import { ApiError } from "@/types/api";
 export interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
   params?: Record<string, string | number | boolean | undefined | null>;
-  auth?: boolean;
+  /** Quando true, chama um route handler local (BFF) em vez do backend. */
+  local?: boolean;
+  /** Quando true, não tenta renovar a sessão automaticamente em caso de 401. */
+  skipAuthRefresh?: boolean;
 }
 
-function buildUrl(path: string, params?: RequestOptions["params"]): string {
-  const url = new URL(
-    path.startsWith("/") ? path.slice(1) : path,
-    `${config.apiUrl}/`,
-  );
+function appendParams(url: string, params?: RequestOptions["params"]): string {
+  if (!params) return url;
 
-  if (params) {
-    for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined && value !== null && value !== "") {
-        url.searchParams.set(key, String(value));
-      }
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null && value !== "") {
+      search.set(key, String(value));
     }
   }
 
-  return url.toString();
+  const query = search.toString();
+  return query ? `${url}?${query}` : url;
+}
+
+function resolveUrl(
+  path: string,
+  params: RequestOptions["params"],
+  local: boolean,
+): string {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  const base = local ? normalized : `${config.apiUrl}${normalized}`;
+  return appendParams(base, params);
 }
 
 async function parseError(response: Response): Promise<ApiError> {
@@ -38,7 +48,7 @@ async function parseError(response: Response): Promise<ApiError> {
       );
     }
   } catch {
-    // Response body is not JSON
+    // Corpo da resposta não é JSON
   }
 
   return new ApiError(
@@ -51,27 +61,52 @@ export async function httpClient<T>(
   path: string,
   options: RequestOptions = {},
 ): Promise<T> {
-  const { body, params, auth = true, headers, ...init } = options;
+  const {
+    body,
+    params,
+    local = false,
+    skipAuthRefresh = false,
+    headers,
+    ...init
+  } = options;
 
-  const requestHeaders = new Headers(headers);
-  requestHeaders.set("Accept", "application/json");
+  const url = resolveUrl(path, params, local);
 
-  if (body !== undefined) {
-    requestHeaders.set("Content-Type", "application/json");
-  }
+  const execute = async (): Promise<Response> => {
+    const requestHeaders = new Headers(headers);
+    requestHeaders.set("Accept", "application/json");
 
-  if (auth) {
-    const accessToken = tokenStorage.getAccessToken();
-    if (accessToken) {
-      requestHeaders.set("Authorization", `Bearer ${accessToken}`);
+    if (body !== undefined) {
+      requestHeaders.set("Content-Type", "application/json");
+    }
+
+    return fetch(url, {
+      ...init,
+      headers: requestHeaders,
+      credentials: "include",
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  };
+
+  let response = await execute();
+
+  if (
+    response.status === 401 &&
+    !skipAuthRefresh &&
+    typeof window !== "undefined"
+  ) {
+    const refreshed = await refreshAccessToken();
+
+    if (refreshed) {
+      response = await execute();
+    } else {
+      // Refresh falhou: encerra a sessão de forma segura limpando os cookies.
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      }).catch(() => undefined);
     }
   }
-
-  const response = await fetch(buildUrl(path, params), {
-    ...init,
-    headers: requestHeaders,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
 
   if (!response.ok) {
     throw await parseError(response);

@@ -10,14 +10,25 @@ export interface LoginRequest {
   password: string;
 }
 
+/** Resposta exposta ao cliente: nunca inclui tokens (ficam em cookies HttpOnly). */
 export interface LoginResponse {
-  accessToken: string;
   user: AuthUser;
 }
 
-export interface RefreshTokenPayload {
+/** Tokens retornados pelo backend JWT, manipulados apenas no servidor (BFF). */
+export interface AuthTokens {
+  accessToken: string;
   refreshToken: string;
 }
 
-/** @deprecated Use AuthUser instead */
-export type User = AuthUser;
+/** Payload do login vindo do backend, usado apenas nos route handlers. */
+export interface BackendLoginData extends AuthTokens {
+  user: AuthUser;
+}
+
+/** Payload do refresh vindo do backend, usado apenas nos route handlers. */
+export interface BackendRefreshData {
+  accessToken: string;
+  refreshToken?: string;
+  user?: AuthUser;
+}

@@ -25,8 +25,8 @@ export function useLogin() {
 
   const mutation = useMutation({
     mutationFn: (payload: LoginRequest) => authService.login(payload),
-    onSuccess: (data) => {
-      setSession({ user: data.user, accessToken: data.accessToken });
+    onSuccess: (user) => {
+      setSession(user);
       router.replace("/dashboard");
     },
   });

@@ -5,6 +5,7 @@ import { ApiError } from "@/types/api";
 
 import { authService } from "../services";
 import type { LoginRequest } from "../types";
+import { useAuth } from "./use-auth";
 
 function getLoginErrorMessage(error: unknown): string {
   if (error instanceof ApiError) {
@@ -20,11 +21,13 @@ function getLoginErrorMessage(error: unknown): string {
 
 export function useLogin() {
   const router = useRouter();
+  const { setSession } = useAuth();
 
   const mutation = useMutation({
     mutationFn: (payload: LoginRequest) => authService.login(payload),
-    onSuccess: () => {
-      router.push("/dashboard");
+    onSuccess: (data) => {
+      setSession({ user: data.user, accessToken: data.accessToken });
+      router.replace("/dashboard");
     },
   });
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { LoginForm } from "@/features/auth/components/login-form";
+import { GuestGuard, LoginForm } from "@/features/auth/components";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -8,8 +8,10 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <LoginForm />
-    </div>
+    <GuestGuard>
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <LoginForm />
+      </div>
+    </GuestGuard>
   );
 }

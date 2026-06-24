@@ -1,4 +1,3 @@
-import { tokenStorage } from "@/lib/auth/token-storage";
 import { httpClient } from "@/services/http-client";
 import type { ApiSuccessResponse } from "@/types/api";
 
@@ -15,16 +14,6 @@ export const authService = {
       },
     );
 
-    tokenStorage.setAccessToken(response.data.accessToken);
-
     return response.data;
-  },
-
-  logout(): void {
-    tokenStorage.clearAccessToken();
-  },
-
-  isAuthenticated(): boolean {
-    return tokenStorage.hasAccessToken();
   },
 };

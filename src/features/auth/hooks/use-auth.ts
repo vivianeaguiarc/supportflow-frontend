@@ -1,9 +1,13 @@
-import type { AuthUser } from "../types";
+import { useContext } from "react";
 
-export function useAuth() {
-  return {
-    isAuthenticated: false,
-    user: null as AuthUser | null,
-    isLoading: false,
-  };
+import { AuthContext, type AuthContextValue } from "../contexts";
+
+export function useAuth(): AuthContextValue {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth deve ser usado dentro de um <AuthProvider>.");
+  }
+
+  return context;
 }

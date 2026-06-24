@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { AlertCircle } from "lucide-react";
+import Link from "next/link";
+
 import { TicketPriorityBadge } from "@/components/tickets/ticket-priority-badge";
 import { TicketStatusBadge } from "@/components/tickets/ticket-status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

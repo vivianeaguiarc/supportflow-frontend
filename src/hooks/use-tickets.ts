@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+
 import { ticketsService } from "@/services/tickets.service";
 import type { ListTicketsParams } from "@/types/ticket";
 

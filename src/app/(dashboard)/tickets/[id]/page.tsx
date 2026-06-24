@@ -1,8 +1,9 @@
 "use client";
 
-import { use } from "react";
-import Link from "next/link";
 import { AlertCircle, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { use } from "react";
+
 import { AppShell } from "@/components/layout/app-shell";
 import { TicketPriorityBadge } from "@/components/tickets/ticket-priority-badge";
 import { TicketStatusBadge } from "@/components/tickets/ticket-status-badge";

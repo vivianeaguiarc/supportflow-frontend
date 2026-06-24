@@ -1,1 +1,4 @@
-export type { DashboardStats } from "./dashboard.types";
+export type {
+  DashboardOverview,
+  DashboardPeriodCount,
+} from "./dashboard.types";

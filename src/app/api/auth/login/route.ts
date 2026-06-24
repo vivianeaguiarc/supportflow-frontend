@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
 
-import type { BackendLoginData } from "@/features/auth/types";
 import { setSessionCookies } from "@/lib/auth/cookies";
 import { config } from "@/lib/config";
-import type { ApiErrorResponse, ApiSuccessResponse } from "@/types/api";
+import type { TokenPairResponse } from "@/types/auth";
 
-const GENERIC_ERROR: ApiErrorResponse = {
+const GENERIC_ERROR = {
   success: false,
   error: {
     code: "LOGIN_FAILED",
     message: "Não foi possível realizar o login.",
-    details: null,
+    details: [],
   },
 };
 
@@ -35,22 +34,25 @@ export async function POST(request: Request) {
     return NextResponse.json(GENERIC_ERROR, { status: 502 });
   }
 
+  // O backend retorna TokenPairResponse "cru" ({ accessToken, refreshToken }),
+  // sem envelope e sem usuário. O usuário é obtido depois via GET /auth/me.
   const payload = (await backendResponse.json().catch(() => null)) as
-    | ApiSuccessResponse<BackendLoginData>
-    | ApiErrorResponse
+    | (Partial<TokenPairResponse> & Record<string, unknown>)
     | null;
 
-  if (!backendResponse.ok || !payload || payload.success !== true) {
+  if (!backendResponse.ok || !payload?.accessToken || !payload?.refreshToken) {
     return NextResponse.json(payload ?? GENERIC_ERROR, {
       status: backendResponse.status || 401,
     });
   }
 
-  const { accessToken, refreshToken, user } = payload.data;
-  await setSessionCookies({ accessToken, refreshToken, user });
+  await setSessionCookies({
+    accessToken: payload.accessToken,
+    refreshToken: payload.refreshToken,
+  });
 
   return NextResponse.json(
-    { success: true, data: { user }, message: "Login realizado com sucesso." },
+    { success: true, message: "Login realizado com sucesso." },
     { status: 200 },
   );
 }

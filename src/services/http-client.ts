@@ -1,7 +1,6 @@
 import { refreshAccessToken } from "@/lib/auth/refresh-client";
 import { config } from "@/lib/config";
-import type { ApiErrorResponse } from "@/types/api";
-import { ApiError } from "@/types/api";
+import { ApiError, isApiErrorResponse } from "@/types/api";
 
 export interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
@@ -37,24 +36,37 @@ function resolveUrl(
 }
 
 async function parseError(response: Response): Promise<ApiError> {
+  let payload: unknown;
   try {
-    const payload = (await response.json()) as ApiErrorResponse;
-    if (!payload.success && payload.error) {
-      return new ApiError(
+    payload = await response.json();
+  } catch {
+    // Corpo da resposta não é JSON (ex.: 502/timeout).
+  }
+
+  const error = isApiErrorResponse(payload)
+    ? new ApiError(
         payload.error.message,
         response.status,
         payload.error.code,
         payload.error.details,
+        payload.requestId,
+      )
+    : new ApiError(
+        response.statusText || "Erro inesperado na requisição.",
+        response.status,
       );
-    }
-  } catch {
-    // Corpo da resposta não é JSON
+
+  // Em desenvolvimento, nunca escondemos erros importantes da API.
+  if (process.env.NODE_ENV !== "production") {
+    console.error(`[httpClient] ${response.status} ${response.url}`, {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      requestId: error.requestId,
+    });
   }
 
-  return new ApiError(
-    response.statusText || "Erro na requisição",
-    response.status,
-  );
+  return error;
 }
 
 export async function httpClient<T>(

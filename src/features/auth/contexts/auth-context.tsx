@@ -1,19 +1,18 @@
 "use client";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { createContext, type ReactNode, useCallback, useMemo } from "react";
 
-import { sessionService } from "../services";
-import type { AuthUser } from "../types";
+import { AUTH_ME_QUERY_KEY, useMe } from "../hooks/use-me";
+import { authService } from "../services";
+import type { AuthState } from "../types";
 
-const SESSION_QUERY_KEY = ["auth", "session"] as const;
+const AUTH_QUERY_KEY = ["auth"] as const;
 
-export interface AuthContextValue {
-  user: AuthUser | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  setSession: (user: AuthUser) => void;
+export interface AuthContextValue extends AuthState {
+  /** Revalida a sessão consultando `GET /auth/me` (ex.: após login). */
+  refreshSession: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -27,28 +26,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data, isPending } = useQuery({
-    queryKey: SESSION_QUERY_KEY,
-    queryFn: () => sessionService.getCurrentUser(),
-    retry: false,
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-  });
-
+  // Hidratação da sessão ao carregar a aplicação (server state via React Query).
+  const { data, isPending } = useMe();
   const user = data ?? null;
 
-  const setSession = useCallback(
-    (nextUser: AuthUser) => {
-      queryClient.setQueryData(SESSION_QUERY_KEY, nextUser);
-    },
-    [queryClient],
-  );
+  const refreshSession = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
+  }, [queryClient]);
 
   const logout = useCallback(async () => {
     try {
-      await sessionService.logout();
+      await authService.logout();
     } finally {
-      queryClient.setQueryData(SESSION_QUERY_KEY, null);
+      queryClient.setQueryData(AUTH_ME_QUERY_KEY, null);
+      await queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEY });
       router.replace("/login");
     }
   }, [queryClient, router]);
@@ -58,10 +49,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       user,
       isAuthenticated: Boolean(user),
       isLoading: isPending,
-      setSession,
+      refreshSession,
       logout,
     }),
-    [user, isPending, setSession, logout],
+    [user, isPending, refreshSession, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

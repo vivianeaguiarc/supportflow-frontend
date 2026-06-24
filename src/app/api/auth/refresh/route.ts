@@ -1,22 +1,19 @@
 import { NextResponse } from "next/server";
 
-import type { BackendRefreshData } from "@/features/auth/types";
 import {
   clearSessionCookies,
   getRefreshTokenCookie,
-  setAccessTokenCookie,
-  setRefreshTokenCookie,
-  setUserCookie,
+  setSessionCookies,
 } from "@/lib/auth/cookies";
 import { config } from "@/lib/config";
-import type { ApiErrorResponse, ApiSuccessResponse } from "@/types/api";
+import type { TokenPairResponse } from "@/types/auth";
 
-const REFRESH_ERROR: ApiErrorResponse = {
+const REFRESH_ERROR = {
   success: false,
   error: {
     code: "REFRESH_FAILED",
     message: "Sessão expirada.",
-    details: null,
+    details: [],
   },
 };
 
@@ -43,25 +40,19 @@ export async function POST() {
     return NextResponse.json(REFRESH_ERROR, { status: 502 });
   }
 
-  const payload = (await backendResponse.json().catch(() => null)) as
-    | ApiSuccessResponse<BackendRefreshData>
-    | ApiErrorResponse
-    | null;
+  const tokens = (await backendResponse
+    .json()
+    .catch(() => null)) as Partial<TokenPairResponse> | null;
 
-  if (!backendResponse.ok || !payload || payload.success !== true) {
+  if (!backendResponse.ok || !tokens?.accessToken || !tokens?.refreshToken) {
     await clearSessionCookies();
     return NextResponse.json(REFRESH_ERROR, { status: 401 });
   }
 
-  await setAccessTokenCookie(payload.data.accessToken);
-
-  if (payload.data.refreshToken) {
-    await setRefreshTokenCookie(payload.data.refreshToken);
-  }
-
-  if (payload.data.user) {
-    await setUserCookie(payload.data.user);
-  }
+  await setSessionCookies({
+    accessToken: tokens.accessToken,
+    refreshToken: tokens.refreshToken,
+  });
 
   return NextResponse.json({ success: true }, { status: 200 });
 }

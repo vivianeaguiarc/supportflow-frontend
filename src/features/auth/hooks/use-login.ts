@@ -21,12 +21,13 @@ function getLoginErrorMessage(error: unknown): string {
 
 export function useLogin() {
   const router = useRouter();
-  const { setSession } = useAuth();
+  const { refreshSession } = useAuth();
 
   const mutation = useMutation({
     mutationFn: (payload: LoginRequest) => authService.login(payload),
-    onSuccess: (user) => {
-      setSession(user);
+    onSuccess: async () => {
+      // Após o login, recupera o usuário autenticado via GET /auth/me.
+      await refreshSession();
       router.replace("/dashboard");
     },
   });

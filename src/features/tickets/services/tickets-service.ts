@@ -1,22 +1,115 @@
+import { httpClient } from "@/services/http-client";
 import type { ApiPaginatedResponse } from "@/types/api";
+import { unwrap } from "@/types/api";
+import type {
+  AssignTicketRequest,
+  CreateTicketRequest,
+  ListTicketsParams,
+  Ticket,
+  TicketMetrics,
+  TicketSummary,
+  UpdateTicketStatusRequest,
+} from "@/types/ticket";
 
-import type { ListTicketsParams, Ticket, TicketSummary } from "../types";
+type QueryParams = Record<string, string | number | boolean | undefined | null>;
 
+function toQueryParams(filters: ListTicketsParams): QueryParams {
+  const {
+    page,
+    limit,
+    status,
+    priority,
+    assignedToId,
+    customerId,
+    search,
+    sortBy,
+    sortOrder,
+  } = filters;
+
+  return {
+    page,
+    limit,
+    status,
+    priority,
+    assignedToId,
+    customerId,
+    search,
+    sortBy,
+    sortOrder,
+  };
+}
+
+/**
+ * Camada de integração com os endpoints reais de tickets.
+ *
+ * Todas as chamadas passam pelos route handlers BFF (`/api/tickets/*`), que
+ * injetam o access token (cookie HttpOnly) como `Authorization: Bearer` ao
+ * falar com o backend. Os endpoints "crus" são desembrulhados com `unwrap()`
+ * por causa do envelope inconsistente do backend.
+ */
 export const ticketsService = {
-  async list(
-    params: ListTicketsParams = {},
-  ): Promise<ApiPaginatedResponse<Ticket>> {
-    void params;
-    throw new Error("ticketsService.list ainda não foi implementado.");
+  /** `GET /tickets` — resposta paginada (com envelope + meta). */
+  list(filters: ListTicketsParams = {}): Promise<ApiPaginatedResponse<Ticket>> {
+    return httpClient<ApiPaginatedResponse<Ticket>>("/api/tickets", {
+      local: true,
+      params: toQueryParams(filters),
+    });
   },
 
+  /** `GET /tickets/{id}` — recurso cru. */
   async getById(id: string): Promise<Ticket> {
-    void id;
-    throw new Error("ticketsService.getById ainda não foi implementado.");
+    const response = await httpClient<Ticket>(
+      `/api/tickets/${encodeURIComponent(id)}`,
+      { local: true },
+    );
+    return unwrap<Ticket>(response);
   },
 
+  /** `POST /tickets` — recurso cru. */
+  async create(payload: CreateTicketRequest): Promise<Ticket> {
+    const response = await httpClient<Ticket>("/api/tickets", {
+      method: "POST",
+      body: payload,
+      local: true,
+    });
+    return unwrap<Ticket>(response);
+  },
+
+  /** `PATCH /tickets/{id}/status` — recurso cru. */
+  async updateStatus(
+    id: string,
+    payload: UpdateTicketStatusRequest,
+  ): Promise<Ticket> {
+    const response = await httpClient<Ticket>(
+      `/api/tickets/${encodeURIComponent(id)}/status`,
+      { method: "PATCH", body: payload, local: true },
+    );
+    return unwrap<Ticket>(response);
+  },
+
+  /** `PATCH /tickets/{id}/assign` — recurso cru. */
+  async assign(id: string, payload: AssignTicketRequest): Promise<Ticket> {
+    const response = await httpClient<Ticket>(
+      `/api/tickets/${encodeURIComponent(id)}/assign`,
+      { method: "PATCH", body: payload, local: true },
+    );
+    return unwrap<Ticket>(response);
+  },
+
+  /** `GET /tickets/summary` — recurso cru. */
   async getSummary(): Promise<TicketSummary> {
-    throw new Error("ticketsService.getSummary ainda não foi implementado.");
+    const response = await httpClient<TicketSummary>("/api/tickets/summary", {
+      local: true,
+    });
+    return unwrap<TicketSummary>(response);
+  },
+
+  /** `GET /tickets/metrics` — recurso cru. */
+  async getMetrics(): Promise<TicketMetrics> {
+    const response = await httpClient<TicketMetrics>("/api/tickets/metrics", {
+      local: true,
+    });
+    return unwrap<TicketMetrics>(response);
   },
 };
 

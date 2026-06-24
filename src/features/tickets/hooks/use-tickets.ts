@@ -1,11 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+
+import type { ListTicketsParams } from "@/types/ticket";
 
 import { ticketsService } from "../services";
-import type { ListTicketsParams } from "../types";
+import { ticketsKeys } from "./tickets-keys";
 
-export function useTickets(params: ListTicketsParams = {}) {
+/** Lista paginada de tickets (`GET /tickets`) com filtros do backend. */
+export function useTickets(filters: ListTicketsParams = {}) {
   return useQuery({
-    queryKey: ["tickets", params],
-    queryFn: () => ticketsService.list(params),
+    queryKey: ticketsKeys.list(filters),
+    queryFn: () => ticketsService.list(filters),
+    placeholderData: keepPreviousData,
   });
 }

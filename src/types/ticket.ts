@@ -48,6 +48,23 @@ export interface TicketSummary {
   byPriority: Record<TicketPriority, number>;
 }
 
+/** Performance individual de agente (item de `TicketMetrics`). */
+export interface AgentPerformance {
+  agentId: string;
+  agentName: string;
+  resolvedTickets: number;
+  avgResolutionTimeHours: number;
+}
+
+/** Métricas agregadas de `GET /tickets/metrics` (schema `TicketMetrics`). */
+export interface TicketMetrics {
+  avgResolutionTimeHours: number;
+  slaComplianceRate: number;
+  resolvedTickets: number;
+  overdueTickets: number;
+  agentPerformance: AgentPerformance[];
+}
+
 /** Body de `POST /tickets`. */
 export interface CreateTicketRequest {
   title: string;

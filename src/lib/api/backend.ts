@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 import { getAccessTokenCookie } from "@/lib/auth/cookies";
 import { config } from "@/lib/config";
 
@@ -27,5 +29,22 @@ export async function backendFetch(
     ...init,
     headers,
     cache: "no-store",
+  });
+}
+
+/**
+ * Encaminha (proxy) uma requisição autenticada do route handler BFF para o
+ * backend, preservando status e corpo originais (envelope ou recurso cru).
+ */
+export async function proxyToBackend(
+  path: string,
+  init: RequestInit = {},
+): Promise<NextResponse> {
+  const response = await backendFetch(path, init);
+  const body = await response.text();
+
+  return new NextResponse(body, {
+    status: response.status,
+    headers: { "Content-Type": "application/json" },
   });
 }

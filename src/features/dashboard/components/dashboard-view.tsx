@@ -11,9 +11,12 @@ import { dashboardKeys } from "../hooks";
 import { AgentsPerformanceSection } from "./agents-performance-section";
 import { CsatSection } from "./csat-section";
 import { OverviewSection } from "./dashboard-overview";
-import { SlaSection } from "./sla-section";
+import { RecentTicketsSection } from "./recent-tickets-section";
+import { SlaGaugeSection } from "./sla-gauge-section";
 import { TicketsByPrioritySection } from "./tickets-by-priority-section";
 import { TicketsByStatusSection } from "./tickets-by-status-section";
+import { TicketsTrendSection } from "./tickets-trend-section";
+import { TopAgentsSection } from "./top-agents-section";
 
 /**
  * Orquestra as seções de analytics do dashboard.
@@ -52,11 +55,19 @@ export function DashboardView() {
 
       <Can perform="analytics:view">
         <OverviewSection />
-        <div className="grid gap-8 lg:grid-cols-2">
-          <TicketsByStatusSection />
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <TicketsTrendSection />
           <TicketsByPrioritySection />
+          <SlaGaugeSection />
         </div>
-        <SlaSection />
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <TicketsByStatusSection />
+          <RecentTicketsSection />
+          <TopAgentsSection />
+        </div>
+
         <AgentsPerformanceSection />
       </Can>
 

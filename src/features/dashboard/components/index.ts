@@ -1,7 +1,11 @@
 export { AgentsPerformanceSection } from "./agents-performance-section";
 export { CsatSection } from "./csat-section";
+export { DashboardCard } from "./dashboard-card";
 export { OverviewSection } from "./dashboard-overview";
 export { DashboardView } from "./dashboard-view";
-export { SlaSection } from "./sla-section";
+export { RecentTicketsSection } from "./recent-tickets-section";
+export { SlaGaugeSection } from "./sla-gauge-section";
 export { TicketsByPrioritySection } from "./tickets-by-priority-section";
 export { TicketsByStatusSection } from "./tickets-by-status-section";
+export { TicketsTrendSection } from "./tickets-trend-section";
+export { TopAgentsSection } from "./top-agents-section";

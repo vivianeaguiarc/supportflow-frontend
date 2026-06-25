@@ -11,38 +11,48 @@ import { getErrorMessage } from "@/lib/api-error";
 import type { Ticket, TicketStatus } from "@/types/ticket";
 
 import { useAssignTicket } from "../hooks/use-assign-ticket";
+import { useTicketTransitions } from "../hooks/use-ticket-transitions";
 import { useUpdateTicketStatus } from "../hooks/use-update-ticket-status";
 import { TICKET_STATUS_LABELS } from "./ticket-status-badge";
 
-const STATUS_OPTIONS = Object.entries(TICKET_STATUS_LABELS) as [
-  TicketStatus,
-  string,
-][];
+const ALL_STATUSES = Object.keys(TICKET_STATUS_LABELS) as TicketStatus[];
 
 interface TicketActionsProps {
   ticket: Ticket;
 }
 
 export function TicketActions({ ticket }: TicketActionsProps) {
-  const [status, setStatus] = useState<TicketStatus>(ticket.status);
+  const [statusChoice, setStatusChoice] = useState<TicketStatus | "">("");
   const [agentId, setAgentId] = useState(ticket.assignedToId ?? "");
 
+  const transitions = useTicketTransitions(ticket.id);
   const updateStatus = useUpdateTicketStatus();
   const assignTicket = useAssignTicket();
 
-  const statusUnchanged = status === ticket.status;
+  const allowedTransitions = transitions.data?.allowedTransitions ?? [];
+  const allowedSet = new Set<TicketStatus>(allowedTransitions);
+  const selected: TicketStatus | "" =
+    statusChoice || allowedTransitions[0] || "";
+  const selectValue = selected || ticket.status;
+  const noTransitions =
+    !transitions.isLoading &&
+    !transitions.isError &&
+    allowedTransitions.length === 0;
+  const statusDisabled =
+    transitions.isLoading || noTransitions || updateStatus.isPending;
+
   const trimmedAgentId = agentId.trim();
   const assigneeUnchanged = trimmedAgentId === (ticket.assignedToId ?? "");
 
   function handleStatusConfirm() {
-    if (statusUnchanged) return;
+    if (!selected) return;
 
     updateStatus.mutate(
-      { id: ticket.id, status },
+      { id: ticket.id, status: selected },
       {
         onSuccess: () =>
           toast.success(
-            `Status alterado para "${TICKET_STATUS_LABELS[status]}".`,
+            `Status alterado para "${TICKET_STATUS_LABELS[selected]}".`,
           ),
         onError: (error) =>
           toast.error(
@@ -75,29 +85,50 @@ export function TicketActions({ ticket }: TicketActionsProps) {
         <select
           id="ticket-status"
           className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50"
-          value={status}
-          onChange={(event) => setStatus(event.target.value as TicketStatus)}
-          disabled={updateStatus.isPending}
+          value={selectValue}
+          onChange={(event) =>
+            setStatusChoice(event.target.value as TicketStatus)
+          }
+          disabled={statusDisabled}
         >
-          {STATUS_OPTIONS.map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
+          {ALL_STATUSES.map((value) => (
+            <option key={value} value={value} disabled={!allowedSet.has(value)}>
+              {TICKET_STATUS_LABELS[value]}
+              {value === ticket.status ? " (atual)" : ""}
             </option>
           ))}
         </select>
+
+        {transitions.isError ? (
+          <p className="text-xs text-destructive">
+            {getErrorMessage(
+              transitions.error,
+              "Não foi possível carregar as transições válidas.",
+            )}
+          </p>
+        ) : noTransitions ? (
+          <p className="text-xs text-muted-foreground">
+            Nenhuma transição de status disponível para o estado atual.
+          </p>
+        ) : null}
+
         <ConfirmDialog
           trigger={
             <Button
               type="button"
               size="sm"
               className="w-full"
-              disabled={statusUnchanged || updateStatus.isPending}
+              disabled={!selected || statusDisabled}
             >
               {updateStatus.isPending ? "Salvando..." : "Atualizar status"}
             </Button>
           }
           title="Alterar status do chamado"
-          description={`Confirmar a alteração do status para "${TICKET_STATUS_LABELS[status]}"?`}
+          description={
+            selected
+              ? `Confirmar a alteração do status para "${TICKET_STATUS_LABELS[selected]}"?`
+              : "Selecione um status válido."
+          }
           confirmLabel="Alterar"
           onConfirm={handleStatusConfirm}
         />

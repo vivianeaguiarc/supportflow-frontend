@@ -195,15 +195,17 @@ adivinhar o formato.
 
 Todos exigem `Authorization: Bearer`. Respostas envelopadas (`data` indicado):
 
-| Método | Path                   | Body / Params               | `data` da resposta             |
-| ------ | ---------------------- | --------------------------- | ------------------------------ |
-| GET    | `/tickets`             | query params (ver abaixo)   | `Ticket[]` + `meta` (paginado) |
-| POST   | `/tickets`             | `CreateTicketRequest`       | `Ticket` (201)                 |
-| GET    | `/tickets/{id}`        | —                           | `Ticket`                       |
-| GET    | `/tickets/summary`     | —                           | `TicketSummary`                |
-| GET    | `/tickets/metrics`     | —                           | `TicketMetrics`                |
-| PATCH  | `/tickets/{id}/status` | `UpdateTicketStatusRequest` | `Ticket`                       |
-| PATCH  | `/tickets/{id}/assign` | `AssignTicketRequest`       | `Ticket`                       |
+| Método | Path                        | Body / Params               | `data` da resposta             |
+| ------ | --------------------------- | --------------------------- | ------------------------------ |
+| GET    | `/tickets`                  | query params (ver abaixo)   | `Ticket[]` + `meta` (paginado) |
+| POST   | `/tickets`                  | `CreateTicketRequest`       | `Ticket` (201)                 |
+| GET    | `/tickets/{id}`             | —                           | `Ticket`                       |
+| GET    | `/tickets/{id}/history`     | —                           | `TicketHistory`                |
+| GET    | `/tickets/{id}/transitions` | —                           | `TicketStatusTransitions`      |
+| GET    | `/tickets/summary`          | —                           | `TicketSummary`                |
+| GET    | `/tickets/metrics`          | —                           | `TicketMetrics`                |
+| PATCH  | `/tickets/{id}/status`      | `UpdateTicketStatusRequest` | `Ticket`                       |
+| PATCH  | `/tickets/{id}/assign`      | `AssignTicketRequest`       | `Ticket`                       |
 
 **Query params de `GET /tickets`:** `status`, `priority`, `categoryId`,
 `customerId`, `assignedTo`, `assignedToId`, `unassigned`, `team`, `overdue`,
@@ -253,7 +255,49 @@ interface UpdateTicketStatusRequest {
 interface AssignTicketRequest {
   agentId: string;
 } // `assignedToId` é alias legado/deprecated
+
+// GET /tickets/{id}/history → ApiSuccessResponse<TicketHistory>
+type TicketHistoryEvent =
+  | "CREATED"
+  | "ASSIGNED"
+  | "REASSIGNED"
+  | "STATUS_CHANGED"
+  | "PRIORITY_CHANGED"
+  | "CATEGORY_CHANGED"
+  | "COMMENT_ADDED"
+  | "ATTACHMENT_ADDED"
+  | "ATTACHMENT_REMOVED"
+  | "TICKET_ESCALATED"
+  | "SLA_BREACHED";
+
+interface TicketHistoryEntry {
+  id: string;
+  ticketId: string;
+  actorId: string | null; // só o ID (backend não expõe nome aqui)
+  action: TicketHistoryEvent;
+  oldValue: string | null;
+  newValue: string | null;
+  metadata: Record<string, unknown> | null;
+  createdAt: string; // ISO; backend ordena por createdAt asc
+}
+interface TicketHistory {
+  ticketId: string;
+  history: TicketHistoryEntry[];
+}
+
+// GET /tickets/{id}/transitions → ApiSuccessResponse<TicketStatusTransitions>
+interface TicketStatusTransitions {
+  currentStatus: TicketStatus;
+  allowedTransitions: TicketStatus[]; // state machine do backend
+}
 ```
+
+> **State machine (backend):** `OPEN → IN_PROGRESS|ESCALATED`;
+> `IN_PROGRESS → WAITING_CUSTOMER|ESCALATED|RESOLVED`;
+> `WAITING_CUSTOMER → IN_PROGRESS|ESCALATED`;
+> `ESCALATED → IN_PROGRESS|RESOLVED`; `RESOLVED → CLOSED`; `CLOSED → ∅`.
+> O frontend não replica essa tabela: consome `GET /tickets/{id}/transitions`
+> para exibir apenas transições válidas.
 
 ### 4.2. Dashboard / Analytics
 

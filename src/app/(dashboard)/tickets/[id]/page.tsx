@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, FileQuestion, History } from "lucide-react";
+import { ArrowLeft, FileQuestion } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
 
@@ -18,6 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import {
   TicketActions,
+  TicketHistory,
   TicketPriorityBadge,
   TicketStatusBadge,
 } from "@/features/tickets/components";
@@ -203,15 +204,7 @@ export default function TicketDetailPage({ params }: TicketDetailPageProps) {
                 </Card>
 
                 <PageSection title="Histórico">
-                  <Card>
-                    <CardContent>
-                      <EmptyState
-                        icon={History}
-                        title="Histórico indisponível"
-                        description="O histórico de eventos ainda não está integrado nesta tela."
-                      />
-                    </CardContent>
-                  </Card>
+                  <TicketHistory ticketId={ticket.id} />
                 </PageSection>
               </div>
 

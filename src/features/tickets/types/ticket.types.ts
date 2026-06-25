@@ -8,9 +8,13 @@ export type {
   CreateTicketRequest,
   ListTicketsParams,
   Ticket,
+  TicketHistory,
+  TicketHistoryEntry,
+  TicketHistoryEvent,
   TicketMetrics,
   TicketPriority,
   TicketStatus,
+  TicketStatusTransitions,
   TicketSummary,
   UpdateTicketStatusRequest,
 } from "@/types/ticket";

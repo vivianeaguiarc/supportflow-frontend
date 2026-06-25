@@ -17,7 +17,18 @@ export function useUpdateTicketStatus() {
       ticketsService.updateStatus(id, { status }),
     onSuccess: (ticket) => {
       queryClient.setQueryData(ticketsKeys.detail(ticket.id), ticket);
-      queryClient.invalidateQueries({ queryKey: ticketsKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: ticketsKeys.detail(ticket.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ticketsKeys.history(ticket.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ticketsKeys.transitions(ticket.id),
+      });
+      queryClient.invalidateQueries({ queryKey: ticketsKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ticketsKeys.summary() });
+      queryClient.invalidateQueries({ queryKey: ticketsKeys.metrics() });
     },
   });
 

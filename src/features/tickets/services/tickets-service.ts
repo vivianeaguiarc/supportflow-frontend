@@ -6,7 +6,9 @@ import type {
   CreateTicketRequest,
   ListTicketsParams,
   Ticket,
+  TicketHistory,
   TicketMetrics,
+  TicketStatusTransitions,
   TicketSummary,
   UpdateTicketStatusRequest,
 } from "@/types/ticket";
@@ -94,6 +96,24 @@ export const ticketsService = {
       { method: "PATCH", body: payload, local: true },
     );
     return unwrap<Ticket>(response);
+  },
+
+  /** `GET /tickets/{id}/history` — trilha de auditoria (recurso cru). */
+  async getHistory(id: string): Promise<TicketHistory> {
+    const response = await httpClient<TicketHistory>(
+      `/api/tickets/${encodeURIComponent(id)}/history`,
+      { local: true },
+    );
+    return unwrap<TicketHistory>(response);
+  },
+
+  /** `GET /tickets/{id}/transitions` — transições de status válidas (recurso cru). */
+  async getTransitions(id: string): Promise<TicketStatusTransitions> {
+    const response = await httpClient<TicketStatusTransitions>(
+      `/api/tickets/${encodeURIComponent(id)}/transitions`,
+      { local: true },
+    );
+    return unwrap<TicketStatusTransitions>(response);
   },
 
   /** `GET /tickets/summary` — recurso cru. */

@@ -80,6 +80,46 @@ export interface UpdateTicketStatusRequest {
   status: TicketStatus;
 }
 
+/** Eventos da trilha de auditoria do chamado (schema `TicketHistoryEvent`). */
+export type TicketHistoryEvent =
+  | "CREATED"
+  | "ASSIGNED"
+  | "REASSIGNED"
+  | "STATUS_CHANGED"
+  | "PRIORITY_CHANGED"
+  | "CATEGORY_CHANGED"
+  | "COMMENT_ADDED"
+  | "ATTACHMENT_ADDED"
+  | "ATTACHMENT_REMOVED"
+  | "TICKET_ESCALATED"
+  | "SLA_BREACHED";
+
+/** Item do histórico (schema `TicketHistoryEntry`). */
+export interface TicketHistoryEntry {
+  id: string;
+  ticketId: string;
+  /** Usuário que executou a ação; `null` quando originado pelo sistema. */
+  actorId: string | null;
+  action: TicketHistoryEvent;
+  oldValue: string | null;
+  newValue: string | null;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+}
+
+/** Resposta de `GET /tickets/{id}/history` (schema `TicketHistoryListResponse`). */
+export interface TicketHistory {
+  ticketId: string;
+  history: TicketHistoryEntry[];
+}
+
+/** Resposta de `GET /tickets/{id}/transitions` (schema `TicketStatusTransitions`). */
+export interface TicketStatusTransitions {
+  currentStatus: TicketStatus;
+  /** Status válidos a partir do estado atual (state machine do backend). */
+  allowedTransitions: TicketStatus[];
+}
+
 /** Body de `PATCH /tickets/{id}/assign`. */
 export interface AssignTicketRequest {
   agentId: string;

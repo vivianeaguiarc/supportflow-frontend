@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { getErrorMessage } from "@/lib/api-error";
+import { MESSAGES } from "@/lib/notifications";
 import type { AssignTicketRequest } from "@/types/ticket";
 
 import { ticketsService } from "../services";
@@ -15,6 +16,7 @@ export function useAssignTicket() {
   const mutation = useMutation({
     mutationFn: ({ id, agentId }: AssignTicketInput) =>
       ticketsService.assign(id, { agentId }),
+    meta: { successMessage: MESSAGES.ticket.assigned },
     onSuccess: (ticket) => {
       queryClient.setQueryData(ticketsKeys.detail(ticket.id), ticket);
       queryClient.invalidateQueries({

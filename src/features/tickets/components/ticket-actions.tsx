@@ -1,11 +1,10 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
-import { toast } from "sonner";
 
 import { Can } from "@/components/auth";
+import { ConfirmActionDialog } from "@/components/feedback";
 import { Button } from "@/components/ui/button";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AgentSelect } from "@/features/users";
@@ -51,36 +50,14 @@ export function TicketActions({ ticket }: TicketActionsProps) {
 
   function handleStatusConfirm() {
     if (!selected) return;
-
-    updateStatus.mutate(
-      { id: ticket.id, status: selected },
-      {
-        onSuccess: () =>
-          toast.success(
-            `Status alterado para "${TICKET_STATUS_LABELS[selected]}".`,
-          ),
-        onError: (error) =>
-          toast.error(
-            getErrorMessage(error, "Não foi possível alterar o status."),
-          ),
-      },
-    );
+    // Feedback (sucesso/erro) é centralizado no MutationCache via `meta`.
+    updateStatus.mutate({ id: ticket.id, status: selected });
   }
 
   function handleAssignSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!trimmedAgentId || assigneeUnchanged) return;
-
-    assignTicket.mutate(
-      { id: ticket.id, agentId: trimmedAgentId },
-      {
-        onSuccess: () => toast.success("Chamado atribuído com sucesso."),
-        onError: (error) =>
-          toast.error(
-            getErrorMessage(error, "Não foi possível atribuir o chamado."),
-          ),
-      },
-    );
+    assignTicket.mutate({ id: ticket.id, agentId: trimmedAgentId });
   }
 
   return (
@@ -122,7 +99,7 @@ export function TicketActions({ ticket }: TicketActionsProps) {
             </p>
           ) : null}
 
-          <ConfirmDialog
+          <ConfirmActionDialog
             trigger={
               <Button
                 type="button"

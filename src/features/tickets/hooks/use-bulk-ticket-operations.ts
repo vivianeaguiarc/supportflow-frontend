@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { dashboardKeys } from "@/features/dashboard/hooks";
 import { getErrorMessage } from "@/lib/api-error";
+import { MESSAGES } from "@/lib/notifications";
 import type {
   BulkAssignTicketsRequest,
   BulkTicketOperationResult,
@@ -10,6 +11,13 @@ import type {
 
 import { ticketsService } from "../services";
 import { ticketsKeys } from "./tickets-keys";
+
+/** Mensagem de sucesso em lote a partir do resultado atômico do backend. */
+function bulkSuccessMessage(data: unknown): string {
+  return MESSAGES.ticket.bulkUpdated(
+    (data as BulkTicketOperationResult).totalUpdated,
+  );
+}
 
 /**
  * Invalidação compartilhada após uma operação em lote bem-sucedida.
@@ -42,6 +50,7 @@ export function useBulkUpdateTicketStatus() {
   const mutation = useMutation({
     mutationFn: (payload: BulkUpdateTicketStatusRequest) =>
       ticketsService.bulkUpdateStatus(payload),
+    meta: { successMessage: bulkSuccessMessage },
     onSuccess: invalidate,
   });
 
@@ -58,6 +67,7 @@ export function useBulkAssignTickets() {
   const mutation = useMutation({
     mutationFn: (payload: BulkAssignTicketsRequest) =>
       ticketsService.bulkAssign(payload),
+    meta: { successMessage: bulkSuccessMessage },
     onSuccess: invalidate,
   });
 

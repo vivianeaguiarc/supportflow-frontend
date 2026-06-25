@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { dashboardKeys } from "@/features/dashboard/hooks";
 import { getErrorMessage } from "@/lib/api-error";
+import { MESSAGES } from "@/lib/notifications";
 import type { CreateTicketRequest } from "@/types/ticket";
 
 import { ticketsService } from "../services";
@@ -19,6 +20,7 @@ export function useCreateTicket() {
   const mutation = useMutation({
     mutationFn: (payload: CreateTicketRequest) =>
       ticketsService.create(payload),
+    meta: { successMessage: MESSAGES.ticket.created },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ticketsKeys.all });
       void queryClient.invalidateQueries({ queryKey: dashboardKeys.all });

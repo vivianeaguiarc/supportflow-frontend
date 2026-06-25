@@ -2,9 +2,10 @@ import "@/styles/globals.css";
 
 import type { Metadata } from "next";
 import { Geist_Mono, Mulish } from "next/font/google";
-import { Toaster } from "sonner";
 
+import { GlobalErrorBoundary, OfflineBanner } from "@/components/feedback";
 import { AuthProvider } from "@/features/auth/contexts";
+import { NotificationProvider } from "@/lib/notifications";
 import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 
@@ -45,10 +46,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <QueryProvider>
-            <AuthProvider>{children}</AuthProvider>
-          </QueryProvider>
-          <Toaster richColors position="top-right" />
+          <NotificationProvider>
+            <QueryProvider>
+              <AuthProvider>
+                <GlobalErrorBoundary>
+                  <OfflineBanner />
+                  {children}
+                </GlobalErrorBoundary>
+              </AuthProvider>
+            </QueryProvider>
+          </NotificationProvider>
         </ThemeProvider>
       </body>
     </html>

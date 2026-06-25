@@ -1,21 +1,14 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect } from "react";
+
+import { AppLoader } from "@/components/feedback";
 
 import { useAuth } from "../hooks";
 
 interface AuthGuardProps {
   children: ReactNode;
-}
-
-function FullScreenLoader() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <Loader2 className="size-6 animate-spin text-muted-foreground" />
-    </div>
-  );
 }
 
 export function AuthGuard({ children }: AuthGuardProps) {
@@ -29,7 +22,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   }, [isLoading, isAuthenticated, router]);
 
   if (isLoading || !isAuthenticated) {
-    return <FullScreenLoader />;
+    return <AppLoader fullScreen label="Carregando sua sessão..." />;
   }
 
   return <>{children}</>;

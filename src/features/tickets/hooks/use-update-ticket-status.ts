@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { getErrorMessage } from "@/lib/api-error";
+import { MESSAGES } from "@/lib/notifications";
 import type { UpdateTicketStatusRequest } from "@/types/ticket";
 
 import { ticketsService } from "../services";
@@ -15,6 +16,10 @@ export function useUpdateTicketStatus() {
   const mutation = useMutation({
     mutationFn: ({ id, status }: UpdateTicketStatusInput) =>
       ticketsService.updateStatus(id, { status }),
+    meta: {
+      successMessage: MESSAGES.ticket.statusUpdated,
+      errorMessage: MESSAGES.error.ticketUpdate,
+    },
     onSuccess: (ticket) => {
       queryClient.setQueryData(ticketsKeys.detail(ticket.id), ticket);
       queryClient.invalidateQueries({

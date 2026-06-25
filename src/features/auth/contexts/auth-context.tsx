@@ -4,6 +4,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { createContext, type ReactNode, useCallback, useMemo } from "react";
 
+import { MESSAGES, notify } from "@/lib/notifications";
+
 import { AUTH_ME_QUERY_KEY, useMe } from "../hooks/use-me";
 import { authService } from "../services";
 import type { AuthState } from "../types";
@@ -37,6 +39,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = useCallback(async () => {
     try {
       await authService.logout();
+      notify.success(MESSAGES.auth.logoutSuccess);
+    } catch (error) {
+      notify.apiError(error);
     } finally {
       queryClient.setQueryData(AUTH_ME_QUERY_KEY, null);
       await queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEY });

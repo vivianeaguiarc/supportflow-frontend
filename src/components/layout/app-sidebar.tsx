@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { ConfirmActionDialog } from "@/components/feedback";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { useAuth } from "@/features/auth/hooks";
@@ -113,15 +114,22 @@ export function AppSidebar() {
                 {user.email}
               </p>
             </div>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Sair"
-              title="Sair"
-              onClick={logout}
-            >
-              <LogOut className="size-4" />
-            </Button>
+            <ConfirmActionDialog
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="Sair"
+                  title="Sair"
+                >
+                  <LogOut className="size-4" />
+                </Button>
+              }
+              title="Encerrar sessão"
+              description="Você precisará fazer login novamente para acessar o painel."
+              confirmLabel="Sair"
+              onConfirm={logout}
+            />
           </div>
         ) : null}
       </div>

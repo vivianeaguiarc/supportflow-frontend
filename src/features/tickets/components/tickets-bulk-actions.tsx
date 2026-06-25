@@ -3,7 +3,6 @@
 import type { Table } from "@tanstack/react-table";
 import { UserPlus, X } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 
 import { Can } from "@/components/auth";
 import { Button } from "@/components/ui/button";
@@ -26,13 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AgentSelect } from "@/features/users";
 import { usePermissions } from "@/hooks/use-permissions";
-import { getErrorMessage } from "@/lib/api-error";
-import { ApiError } from "@/types/api";
-import type {
-  BulkTicketOperationResult,
-  Ticket,
-  TicketStatus,
-} from "@/types/ticket";
+import type { Ticket, TicketStatus } from "@/types/ticket";
 
 import { useBulkAssignTickets, useBulkUpdateTicketStatus } from "../hooks";
 import { TICKET_STATUS_LABELS } from "./ticket-status-badge";
@@ -43,33 +36,6 @@ const STATUS_OPTIONS: FilterSelectOption[] = Object.entries(
 
 /** Acima deste número de seleções pedimos confirmação extra. */
 const CONFIRM_THRESHOLD = 20;
-
-/** Mapeia erros HTTP da operação em lote para mensagens amigáveis. */
-function bulkErrorMessage(error: unknown): string {
-  if (error instanceof ApiError) {
-    switch (error.status) {
-      case 400:
-        return getErrorMessage(error, "Seleção ou dados inválidos.");
-      case 403:
-        return "Você não tem permissão para executar esta ação.";
-      case 404:
-        return getErrorMessage(
-          error,
-          "Um ou mais chamados não foram encontrados.",
-        );
-      case 409:
-        return getErrorMessage(
-          error,
-          "Transição inválida ou regra de negócio violada.",
-        );
-    }
-  }
-  return getErrorMessage(error, "Não foi possível concluir a ação em lote.");
-}
-
-function successMessage(result: BulkTicketOperationResult): string {
-  return `${result.totalUpdated} de ${result.totalRequested} chamados atualizados com sucesso.`;
-}
 
 interface TicketsBulkActionsProps {
   table: Table<Ticket>;
@@ -124,13 +90,12 @@ export function TicketsBulkActions({ table }: TicketsBulkActionsProps) {
     bulkStatus.mutate(
       { ticketIds: ids, status, reason: statusReason.trim() || undefined },
       {
-        onSuccess: (result) => {
-          toast.success(successMessage(result));
+        onSuccess: () => {
+          // Toast (com contagem) e erros são centralizados via `meta`/MutationCache.
           table.resetRowSelection();
           setStatusOpen(false);
           resetStatus();
         },
-        onError: (error) => toast.error(bulkErrorMessage(error)),
       },
     );
   }
@@ -145,13 +110,11 @@ export function TicketsBulkActions({ table }: TicketsBulkActionsProps) {
         reason: assignReason.trim() || undefined,
       },
       {
-        onSuccess: (result) => {
-          toast.success(successMessage(result));
+        onSuccess: () => {
           table.resetRowSelection();
           setAssignOpen(false);
           resetAssign();
         },
-        onError: (error) => toast.error(bulkErrorMessage(error)),
       },
     );
   }

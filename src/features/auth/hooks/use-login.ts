@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
+import { MESSAGES } from "@/lib/notifications";
 import { ApiError } from "@/types/api";
 
 import { authService } from "../services";
@@ -25,6 +26,11 @@ export function useLogin() {
 
   const mutation = useMutation({
     mutationFn: (payload: LoginRequest) => authService.login(payload),
+    // Sucesso → toast global; erro permanece inline no formulário.
+    meta: {
+      successMessage: MESSAGES.auth.loginSuccess,
+      suppressErrorToast: true,
+    },
     onSuccess: async () => {
       // Após o login, recupera o usuário autenticado via GET /auth/me.
       await refreshSession();

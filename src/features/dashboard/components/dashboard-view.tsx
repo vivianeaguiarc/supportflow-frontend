@@ -6,6 +6,7 @@ import { RefreshCw } from "lucide-react";
 import { Can } from "@/components/auth";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/hooks";
+import { MESSAGES, notify } from "@/lib/notifications";
 
 import { dashboardKeys } from "../hooks";
 import { AgentsPerformanceSection } from "./agents-performance-section";
@@ -33,7 +34,9 @@ export function DashboardView() {
   const { user } = useAuth();
 
   function handleRefreshAll() {
-    void queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
+    void queryClient
+      .invalidateQueries({ queryKey: dashboardKeys.all })
+      .then(() => notify.success(MESSAGES.dashboard.refreshed));
   }
 
   return (

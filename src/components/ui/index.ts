@@ -8,7 +8,6 @@
 
 export { CardStat } from "./card-stat";
 export { Checkbox } from "./checkbox";
-export { ConfirmDialog } from "./confirm-dialog";
 export * from "./constants";
 export { DataField } from "./data-field";
 export {

@@ -5,6 +5,7 @@ import {
   LifeBuoy,
   type LucideIcon,
   Ticket,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -32,6 +33,12 @@ const navigation: NavItem[] = [
     href: "/tickets",
     icon: Ticket,
     permission: "tickets:view",
+  },
+  {
+    name: "Clientes",
+    href: "/customers",
+    icon: Users,
+    permission: "directory:view",
   },
 ];
 

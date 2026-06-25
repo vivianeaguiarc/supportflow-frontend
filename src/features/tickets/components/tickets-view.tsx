@@ -19,6 +19,7 @@ import type {
 } from "@/types/ticket";
 
 import { useTickets } from "../hooks";
+import { TicketsBulkActions } from "./tickets-bulk-actions";
 import { ticketColumns } from "./tickets-columns";
 import { TicketsFilters } from "./tickets-filters";
 
@@ -119,6 +120,8 @@ export function TicketsView() {
           onReset={resetAll}
         />
       </DataTableToolbar>
+
+      <TicketsBulkActions table={table} />
 
       <Card>
         <CardContent className="space-y-4 py-4">

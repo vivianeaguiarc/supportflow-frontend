@@ -1,3 +1,4 @@
+export { TicketActions } from "./ticket-actions";
 export { TicketPriorityBadge } from "./ticket-priority-badge";
 export { TicketStatusBadge } from "./ticket-status-badge";
 export { TicketsFilters } from "./tickets-filters";

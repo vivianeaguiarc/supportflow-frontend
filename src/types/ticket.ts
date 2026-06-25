@@ -65,6 +65,18 @@ export interface TicketMetrics {
   agentPerformance: AgentPerformance[];
 }
 
+/** Categoria de chamado (schema `TicketCategory`), de `GET /ticket-categories`. */
+export interface TicketCategory {
+  id: string;
+  tenantId: string;
+  name: string;
+  description: string | null;
+  slaHours: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 /** Body de `POST /tickets`. */
 export interface CreateTicketRequest {
   title: string;

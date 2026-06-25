@@ -22,4 +22,5 @@ export { Pagination } from "./pagination";
 export { PriorityBadge } from "./priority-badge";
 export { SearchInput } from "./search-input";
 export { StatusBadge } from "./status-badge";
+export { Textarea } from "./textarea";
 export { UserAvatar } from "./user-avatar";

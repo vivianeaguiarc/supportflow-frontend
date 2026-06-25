@@ -1,12 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { dashboardKeys } from "@/features/dashboard/hooks";
 import { getErrorMessage } from "@/lib/api-error";
 import type { CreateTicketRequest } from "@/types/ticket";
 
 import { ticketsService } from "../services";
 import { ticketsKeys } from "./tickets-keys";
 
-/** Cria um ticket (`POST /tickets`) e invalida as listas/indicadores. */
+/**
+ * Cria um ticket (`POST /tickets`).
+ *
+ * Em caso de sucesso invalida tudo de tickets (lista, summary, metrics) e os
+ * analytics do dashboard, mantendo os indicadores coerentes com o novo chamado.
+ */
 export function useCreateTicket() {
   const queryClient = useQueryClient();
 
@@ -14,7 +20,8 @@ export function useCreateTicket() {
     mutationFn: (payload: CreateTicketRequest) =>
       ticketsService.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ticketsKeys.all });
+      void queryClient.invalidateQueries({ queryKey: ticketsKeys.all });
+      void queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
     },
   });
 

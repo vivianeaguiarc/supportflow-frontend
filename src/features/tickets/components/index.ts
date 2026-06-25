@@ -1,3 +1,4 @@
+export { CreateTicketForm } from "./create-ticket-form";
 export { TicketActions } from "./ticket-actions";
 export { TicketHistory } from "./ticket-history";
 export { TicketPriorityBadge } from "./ticket-priority-badge";

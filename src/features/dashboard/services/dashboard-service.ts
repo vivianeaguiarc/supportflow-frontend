@@ -1,23 +1,48 @@
 import { httpClient } from "@/services/http-client";
-import type { ApiSuccessResponse } from "@/types/api";
+import { unwrap } from "@/types/api";
 
-import type { DashboardOverview } from "../types";
+import type {
+  AnalyticsAgentsPerformance,
+  AnalyticsCsat,
+  AnalyticsSla,
+  AnalyticsTicketsByPriority,
+  AnalyticsTicketsByStatus,
+  DashboardOverview,
+} from "../types";
+
+/**
+ * Integração com os endpoints reais de analytics via BFF
+ * (`/api/analytics/{metric}`), que injeta o Bearer do cookie HttpOnly. As
+ * respostas são envelopadas pelo backend, então usamos `unwrap()`.
+ */
+async function fetchAnalytics<T>(metric: string): Promise<T> {
+  const response = await httpClient<T>(`/api/analytics/${metric}`, {
+    local: true,
+  });
+  return unwrap<T>(response);
+}
 
 export const dashboardService = {
-  /**
-   * Busca a visão geral do dashboard.
-   *
-   * A chamada vai para o route handler BFF (`/api/dashboard/overview`), que
-   * injeta o token a partir do cookie HttpOnly e repassa para o backend
-   * (`GET /analytics/overview`). O backend já entrega os indicadores
-   * agregados, portanto não há derivação de métricas no frontend.
-   */
-  async getOverview(): Promise<DashboardOverview> {
-    const response = await httpClient<ApiSuccessResponse<DashboardOverview>>(
-      "/api/dashboard/overview",
-      { local: true },
-    );
+  /** `GET /analytics/overview`. */
+  getOverview: () => fetchAnalytics<DashboardOverview>("overview"),
 
-    return response.data;
-  },
+  /** `GET /analytics/tickets-by-status`. */
+  getTicketsByStatus: () =>
+    fetchAnalytics<AnalyticsTicketsByStatus>("tickets-by-status"),
+
+  /** `GET /analytics/tickets-by-priority`. */
+  getTicketsByPriority: () =>
+    fetchAnalytics<AnalyticsTicketsByPriority>("tickets-by-priority"),
+
+  /** `GET /analytics/sla`. */
+  getSla: () => fetchAnalytics<AnalyticsSla>("sla"),
+
+  /** `GET /analytics/csat`. */
+  getCsat: () => fetchAnalytics<AnalyticsCsat>("csat"),
+
+  /** `GET /analytics/agents-performance`. */
+  getAgentsPerformance: () =>
+    fetchAnalytics<AnalyticsAgentsPerformance>("agents-performance"),
 };
+
+export type DashboardService = typeof dashboardService;

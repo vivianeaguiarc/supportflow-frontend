@@ -5,7 +5,8 @@
  * (`dashboardService`). Reexportado aqui como `analyticsService` para o ponto de
  * entrada estável citado na documentação (`src/services/analytics.service.ts`).
  *
- * `analyticsService.getOverview()` consome `GET /analytics/overview` via BFF
- * `/api/dashboard/overview`.
+ * Os métodos consomem os endpoints reais de analytics via BFF
+ * `/api/analytics/{metric}` (overview, tickets-by-status, tickets-by-priority,
+ * sla, agents-performance, csat).
  */
 export { dashboardService as analyticsService } from "@/features/dashboard/services";

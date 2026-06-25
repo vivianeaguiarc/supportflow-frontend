@@ -16,4 +16,6 @@ export const ticketsKeys = {
   transitions: (id: string) => [...ticketsKeys.all, "transitions", id] as const,
   summary: () => [...ticketsKeys.all, "summary"] as const,
   metrics: () => [...ticketsKeys.all, "metrics"] as const,
+  customers: () => [...ticketsKeys.all, "customers"] as const,
+  categories: () => [...ticketsKeys.all, "categories"] as const,
 };

@@ -13,6 +13,8 @@
  * - TICKET_STATUS (+OMBUDSMAN na rota /status) → ADMIN, SUPERVISOR, AGENT, OMBUDSMAN
  * - TICKET_ASSIGN           → ADMIN, SUPERVISOR
  * - METRICS                 → ADMIN, SUPERVISOR, AGENT
+ * - ANALYTICS_READ (overview/status/priority/sla/agents) → ADMIN, SUPERVISOR
+ * - CSAT_ANALYTICS          → ADMIN, SUPERVISOR, AGENT
  * - CUSTOMER_LIST           → ADMIN, SUPERVISOR, AGENT
  * - USER_ADMIN / config     → ADMIN (SUPER_ADMIN não existe neste tenant)
  */
@@ -25,6 +27,8 @@ export type Permission =
   | "tickets:changeStatus"
   | "tickets:assign"
   | "metrics:view"
+  | "analytics:view"
+  | "analytics:csat"
   | "directory:view"
   | "settings:access";
 
@@ -36,6 +40,10 @@ export const PERMISSION_ROLES: Record<Permission, readonly UserRole[]> = {
   "tickets:changeStatus": ["ADMIN", "SUPERVISOR", "AGENT", "OMBUDSMAN"],
   "tickets:assign": ["ADMIN", "SUPERVISOR"],
   "metrics:view": ["ADMIN", "SUPERVISOR", "AGENT"],
+  // analytics.read no backend: overview, tickets-by-status/priority, sla, agents.
+  "analytics:view": ["ADMIN", "SUPERVISOR"],
+  // CSAT_ANALYTICS no backend inclui AGENT.
+  "analytics:csat": ["ADMIN", "SUPERVISOR", "AGENT"],
   "directory:view": ["ADMIN", "SUPERVISOR", "AGENT"],
   "settings:access": ["ADMIN"],
 };

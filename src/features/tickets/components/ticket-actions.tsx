@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AgentSelect } from "@/features/users";
+import { usePermissions } from "@/hooks/use-permissions";
 import { getErrorMessage } from "@/lib/api-error";
 import type { Ticket, TicketStatus } from "@/types/ticket";
 
@@ -29,6 +31,8 @@ export function TicketActions({ ticket }: TicketActionsProps) {
   const transitions = useTicketTransitions(ticket.id);
   const updateStatus = useUpdateTicketStatus();
   const assignTicket = useAssignTicket();
+  const { can } = usePermissions();
+  const canListUsers = can("users:list");
 
   const allowedTransitions = transitions.data?.allowedTransitions ?? [];
   const allowedSet = new Set<TicketStatus>(allowedTransitions);
@@ -144,13 +148,24 @@ export function TicketActions({ ticket }: TicketActionsProps) {
       <Can perform="tickets:assign">
         <form onSubmit={handleAssignSubmit} className="space-y-2">
           <Label htmlFor="ticket-assignee">Atribuir responsável</Label>
-          <Input
-            id="ticket-assignee"
-            value={agentId}
-            onChange={(event) => setAgentId(event.target.value)}
-            placeholder="ID do atendente (UUID)"
-            disabled={assignTicket.isPending}
-          />
+          {canListUsers ? (
+            <AgentSelect
+              id="ticket-assignee"
+              value={agentId}
+              onChange={setAgentId}
+              disabled={assignTicket.isPending}
+            />
+          ) : (
+            // Sem permissão para listar usuários (ex.: SUPERVISOR): mantém o
+            // input manual de UUID para não bloquear a ação.
+            <Input
+              id="ticket-assignee"
+              value={agentId}
+              onChange={(event) => setAgentId(event.target.value)}
+              placeholder="ID do atendente (UUID)"
+              disabled={assignTicket.isPending}
+            />
+          )}
           <Button
             type="submit"
             size="sm"

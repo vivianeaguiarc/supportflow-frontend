@@ -5,6 +5,7 @@ import { RefreshCw } from "lucide-react";
 
 import { Can } from "@/components/auth";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/features/auth/hooks";
 
 import { dashboardKeys } from "../hooks";
 import { AgentsPerformanceSection } from "./agents-performance-section";
@@ -26,6 +27,7 @@ import { TicketsByStatusSection } from "./tickets-by-status-section";
  */
 export function DashboardView() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   function handleRefreshAll() {
     void queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
@@ -33,8 +35,16 @@ export function DashboardView() {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-end">
-        <Button variant="outline" size="sm" onClick={handleRefreshAll}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <h1 className="font-heading text-2xl font-semibold text-foreground">
+            Olá, {user?.name ?? "bem-vindo"}! 👋
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Aqui está o resumo do atendimento da sua organização.
+          </p>
+        </div>
+        <Button size="sm" onClick={handleRefreshAll}>
           <RefreshCw className="size-4" />
           Atualizar dados
         </Button>

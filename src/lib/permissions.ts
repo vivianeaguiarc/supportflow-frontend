@@ -16,6 +16,7 @@
  * - ANALYTICS_READ (overview/status/priority/sla/agents) → ADMIN, SUPERVISOR
  * - CSAT_ANALYTICS          → ADMIN, SUPERVISOR, AGENT
  * - CUSTOMER_LIST           → ADMIN, SUPERVISOR, AGENT
+ * - USERS_MANAGE (GET /users) → ADMIN (SUPER_ADMIN não existe neste tenant)
  * - USER_ADMIN / config     → ADMIN (SUPER_ADMIN não existe neste tenant)
  */
 import type { UserRole } from "@/types/user";
@@ -30,6 +31,7 @@ export type Permission =
   | "analytics:view"
   | "analytics:csat"
   | "directory:view"
+  | "users:list"
   | "settings:access";
 
 /** Roles autorizadas por permissão (espelho do RBAC do backend). */
@@ -45,6 +47,8 @@ export const PERMISSION_ROLES: Record<Permission, readonly UserRole[]> = {
   // CSAT_ANALYTICS no backend inclui AGENT.
   "analytics:csat": ["ADMIN", "SUPERVISOR", "AGENT"],
   "directory:view": ["ADMIN", "SUPERVISOR", "AGENT"],
+  // GET /users exige USERS_MANAGE no backend → apenas ADMIN neste tenant.
+  "users:list": ["ADMIN"],
   "settings:access": ["ADMIN"],
 };
 

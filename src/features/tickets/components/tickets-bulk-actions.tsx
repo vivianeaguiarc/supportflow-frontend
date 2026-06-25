@@ -24,6 +24,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { AgentSelect } from "@/features/users";
+import { usePermissions } from "@/hooks/use-permissions";
 import { getErrorMessage } from "@/lib/api-error";
 import { ApiError } from "@/types/api";
 import type {
@@ -86,6 +88,8 @@ export function TicketsBulkActions({ table }: TicketsBulkActionsProps) {
   const bulkStatus = useBulkUpdateTicketStatus();
   const bulkAssign = useBulkAssignTickets();
   const isBusy = bulkStatus.isPending || bulkAssign.isPending;
+  const { can } = usePermissions();
+  const canListUsers = can("users:list");
 
   const [statusOpen, setStatusOpen] = useState(false);
   const [status, setStatus] = useState<TicketStatus | "">("");
@@ -278,16 +282,24 @@ export function TicketsBulkActions({ table }: TicketsBulkActionsProps) {
             <div className="mt-4 space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="bulk-agent">Responsável</Label>
-                {/* TODO(users): substituir por combobox de agentes quando houver
-                    fonte real de usuários (ex.: GET /users?role=AGENT). Por ora,
-                    input de UUID temporário (mesmo padrão da ação individual). */}
-                <Input
-                  id="bulk-agent"
-                  value={agentId}
-                  onChange={(event) => setAgentId(event.target.value)}
-                  placeholder="ID do atendente (UUID)"
-                  disabled={isBusy}
-                />
+                {canListUsers ? (
+                  <AgentSelect
+                    id="bulk-agent"
+                    value={agentId}
+                    onChange={setAgentId}
+                    disabled={isBusy}
+                  />
+                ) : (
+                  // Sem permissão para listar usuários (ex.: SUPERVISOR): mantém
+                  // input manual de UUID para não bloquear a ação em lote.
+                  <Input
+                    id="bulk-agent"
+                    value={agentId}
+                    onChange={(event) => setAgentId(event.target.value)}
+                    placeholder="ID do atendente (UUID)"
+                    disabled={isBusy}
+                  />
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="bulk-assign-reason">Motivo (opcional)</Label>

@@ -4,6 +4,7 @@ import { ArrowLeft, FileQuestion } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
 
+import { Can } from "@/components/auth";
 import { AppShell } from "@/components/layout/app-shell";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -229,14 +230,16 @@ export default function TicketDetailPage({ params }: TicketDetailPageProps) {
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Ações rápidas</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <TicketActions ticket={ticket} />
-                  </CardContent>
-                </Card>
+                <Can perform={["tickets:changeStatus", "tickets:assign"]}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Ações rápidas</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <TicketActions ticket={ticket} />
+                    </CardContent>
+                  </Card>
+                </Can>
               </div>
             </div>
           ) : null}

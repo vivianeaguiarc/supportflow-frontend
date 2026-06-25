@@ -3,6 +3,7 @@
 import { type FormEvent, useState } from "react";
 import { toast } from "sonner";
 
+import { Can } from "@/components/auth";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
@@ -80,81 +81,89 @@ export function TicketActions({ ticket }: TicketActionsProps) {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="ticket-status">Alterar status</Label>
-        <select
-          id="ticket-status"
-          className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50"
-          value={selectValue}
-          onChange={(event) =>
-            setStatusChoice(event.target.value as TicketStatus)
-          }
-          disabled={statusDisabled}
-        >
-          {ALL_STATUSES.map((value) => (
-            <option key={value} value={value} disabled={!allowedSet.has(value)}>
-              {TICKET_STATUS_LABELS[value]}
-              {value === ticket.status ? " (atual)" : ""}
-            </option>
-          ))}
-        </select>
+      <Can perform="tickets:changeStatus">
+        <div className="space-y-2">
+          <Label htmlFor="ticket-status">Alterar status</Label>
+          <select
+            id="ticket-status"
+            className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50"
+            value={selectValue}
+            onChange={(event) =>
+              setStatusChoice(event.target.value as TicketStatus)
+            }
+            disabled={statusDisabled}
+          >
+            {ALL_STATUSES.map((value) => (
+              <option
+                key={value}
+                value={value}
+                disabled={!allowedSet.has(value)}
+              >
+                {TICKET_STATUS_LABELS[value]}
+                {value === ticket.status ? " (atual)" : ""}
+              </option>
+            ))}
+          </select>
 
-        {transitions.isError ? (
-          <p className="text-xs text-destructive">
-            {getErrorMessage(
-              transitions.error,
-              "Não foi possível carregar as transições válidas.",
-            )}
-          </p>
-        ) : noTransitions ? (
-          <p className="text-xs text-muted-foreground">
-            Nenhuma transição de status disponível para o estado atual.
-          </p>
-        ) : null}
+          {transitions.isError ? (
+            <p className="text-xs text-destructive">
+              {getErrorMessage(
+                transitions.error,
+                "Não foi possível carregar as transições válidas.",
+              )}
+            </p>
+          ) : noTransitions ? (
+            <p className="text-xs text-muted-foreground">
+              Nenhuma transição de status disponível para o estado atual.
+            </p>
+          ) : null}
 
-        <ConfirmDialog
-          trigger={
-            <Button
-              type="button"
-              size="sm"
-              className="w-full"
-              disabled={!selected || statusDisabled}
-            >
-              {updateStatus.isPending ? "Salvando..." : "Atualizar status"}
-            </Button>
-          }
-          title="Alterar status do chamado"
-          description={
-            selected
-              ? `Confirmar a alteração do status para "${TICKET_STATUS_LABELS[selected]}"?`
-              : "Selecione um status válido."
-          }
-          confirmLabel="Alterar"
-          onConfirm={handleStatusConfirm}
-        />
-      </div>
+          <ConfirmDialog
+            trigger={
+              <Button
+                type="button"
+                size="sm"
+                className="w-full"
+                disabled={!selected || statusDisabled}
+              >
+                {updateStatus.isPending ? "Salvando..." : "Atualizar status"}
+              </Button>
+            }
+            title="Alterar status do chamado"
+            description={
+              selected
+                ? `Confirmar a alteração do status para "${TICKET_STATUS_LABELS[selected]}"?`
+                : "Selecione um status válido."
+            }
+            confirmLabel="Alterar"
+            onConfirm={handleStatusConfirm}
+          />
+        </div>
+      </Can>
 
-      <form onSubmit={handleAssignSubmit} className="space-y-2">
-        <Label htmlFor="ticket-assignee">Atribuir responsável</Label>
-        <Input
-          id="ticket-assignee"
-          value={agentId}
-          onChange={(event) => setAgentId(event.target.value)}
-          placeholder="ID do atendente (UUID)"
-          disabled={assignTicket.isPending}
-        />
-        <Button
-          type="submit"
-          size="sm"
-          variant="outline"
-          className="w-full"
-          disabled={
-            !trimmedAgentId || assigneeUnchanged || assignTicket.isPending
-          }
-        >
-          {assignTicket.isPending ? "Atribuindo..." : "Atribuir chamado"}
-        </Button>
-      </form>
+      <Can perform="tickets:assign">
+        <form onSubmit={handleAssignSubmit} className="space-y-2">
+          <Label htmlFor="ticket-assignee">Atribuir responsável</Label>
+          <Input
+            id="ticket-assignee"
+            value={agentId}
+            onChange={(event) => setAgentId(event.target.value)}
+            placeholder="ID do atendente (UUID)"
+            disabled={assignTicket.isPending}
+          />
+          <Button
+            type="submit"
+            size="sm"
+            variant="outline"
+            className="w-full"
+            disabled={
+              !trimmedAgentId || assigneeUnchanged || assignTicket.isPending
+            }
+          >
+            {assignTicket.isPending ? "Atribuindo..." : "Atribuir chamado"}
+          </Button>
+        </form>
+      </Can>
     </div>
   );
 }

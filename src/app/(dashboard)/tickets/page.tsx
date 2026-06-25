@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
+import { AccessDenied, Can } from "@/components/auth";
 import { AppShell } from "@/components/layout/app-shell";
 import { LoadingState } from "@/components/ui/loading-state";
 import { PageContainer } from "@/components/ui/page-container";
@@ -20,9 +21,21 @@ export default function TicketsPage() {
             title="Chamados"
             description="Lista de chamados do tenant com filtros, ordenação e paginação."
           />
-          <Suspense fallback={<LoadingState label="Carregando chamados..." />}>
-            <TicketsView />
-          </Suspense>
+          <Can
+            perform="tickets:view"
+            fallback={
+              <AccessDenied
+                homeHref="/dashboard"
+                homeLabel="Voltar para o dashboard"
+              />
+            }
+          >
+            <Suspense
+              fallback={<LoadingState label="Carregando chamados..." />}
+            >
+              <TicketsView />
+            </Suspense>
+          </Can>
         </div>
       </PageContainer>
     </AppShell>

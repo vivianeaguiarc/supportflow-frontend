@@ -1,18 +1,44 @@
 "use client";
 
-import { LayoutDashboard, LifeBuoy, Ticket } from "lucide-react";
+import {
+  LayoutDashboard,
+  LifeBuoy,
+  type LucideIcon,
+  Ticket,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { usePermissions } from "@/hooks/use-permissions";
+import type { Permission } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Chamados", href: "/tickets", icon: Ticket },
+interface NavItem {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+  permission: Permission;
+}
+
+const navigation: NavItem[] = [
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    permission: "dashboard:view",
+  },
+  {
+    name: "Chamados",
+    href: "/tickets",
+    icon: Ticket,
+    permission: "tickets:view",
+  },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { can } = usePermissions();
+  const visibleNavigation = navigation.filter((item) => can(item.permission));
 
   return (
     <aside className="flex h-full w-64 flex-col border-r border-sidebar-border bg-sidebar">
@@ -29,7 +55,7 @@ export function AppSidebar() {
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 p-4">
-        {navigation.map((item) => {
+        {visibleNavigation.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(`${item.href}/`);
 

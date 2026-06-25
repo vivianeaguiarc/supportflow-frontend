@@ -1,4 +1,9 @@
-export { CommentCard, CommentTimeline, CreateCommentForm } from "./components";
+export {
+  CommentCard,
+  CommentTimeline,
+  CommentVisibilityBadge,
+  CreateCommentForm,
+} from "./components";
 export {
   commentsKeys,
   useCreateTicketComment,

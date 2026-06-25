@@ -11,7 +11,13 @@ import { AUTH_COOKIES } from "@/lib/auth/cookie-names";
  * protegidas comecem a renderizar para quem nem sequer tem sessão, e mandar
  * quem já está logado para fora do `/login`.
  */
-const PROTECTED_PREFIXES = ["/dashboard", "/tickets", "/customers", "/users"];
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/tickets",
+  "/customers",
+  "/users",
+  "/notifications",
+];
 
 function isProtectedPath(pathname: string): boolean {
   return PROTECTED_PREFIXES.some(
@@ -47,6 +53,7 @@ export const config = {
     "/tickets/:path*",
     "/customers/:path*",
     "/users/:path*",
+    "/notifications/:path*",
     "/login",
   ],
 };

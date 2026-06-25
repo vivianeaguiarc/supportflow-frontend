@@ -29,6 +29,12 @@ export const MESSAGES = {
   attachment: {
     uploaded: "Anexo enviado.",
   },
+  notification: {
+    allRead: (count: number): string =>
+      count === 1
+        ? "1 notificação marcada como lida."
+        : `${count} notificações marcadas como lidas.`,
+  },
   dashboard: {
     refreshed: "Dados atualizados.",
   },

@@ -36,6 +36,7 @@ export type Permission =
   | "analytics:csat"
   | "directory:view"
   | "users:list"
+  | "notifications:view"
   | "settings:access";
 
 /** Roles autorizadas por permissão (espelho do RBAC do backend). */
@@ -63,6 +64,15 @@ export const PERMISSION_ROLES: Record<Permission, readonly UserRole[]> = {
   "directory:view": ["ADMIN", "SUPERVISOR", "AGENT"],
   // GET /users exige USERS_MANAGE no backend → apenas ADMIN neste tenant.
   "users:list": ["ADMIN"],
+  // GET /notifications: cada usuário vê apenas as próprias (qualquer role
+  // autenticada). Só exige JWT no backend.
+  "notifications:view": [
+    "ADMIN",
+    "SUPERVISOR",
+    "AGENT",
+    "CUSTOMER",
+    "OMBUDSMAN",
+  ],
   "settings:access": ["ADMIN"],
 };
 

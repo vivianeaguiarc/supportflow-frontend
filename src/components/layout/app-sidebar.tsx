@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Bell,
   LayoutDashboard,
   LifeBuoy,
   LogOut,
@@ -53,6 +54,12 @@ const navigation: NavItem[] = [
     href: "/users",
     icon: UserCog,
     permission: "users:list",
+  },
+  {
+    name: "Notificações",
+    href: "/notifications",
+    icon: Bell,
+    permission: "notifications:view",
   },
 ];
 

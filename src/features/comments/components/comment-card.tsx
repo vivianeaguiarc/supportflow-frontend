@@ -1,9 +1,7 @@
-import { Lock } from "lucide-react";
-
-import { StatusBadge } from "@/components/ui/status-badge";
+import { Mail } from "lucide-react";
 
 import type { TicketCommentWithAuthor } from "../types";
-import { COMMENT_VISIBILITY_META } from "../types";
+import { CommentVisibilityBadge } from "./comment-visibility-badge";
 
 function formatDateTime(value: string): string {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -23,7 +21,6 @@ interface CommentCardProps {
 /** Cartão de um comentário: autor, data, tipo (visibilidade) e conteúdo. */
 export function CommentCard({ comment }: CommentCardProps) {
   const authorName = comment.author?.name ?? shortenId(comment.authorId);
-  const visibility = COMMENT_VISIBILITY_META[comment.visibility];
 
   return (
     <article className="rounded-lg border border-border bg-card p-3">
@@ -31,9 +28,7 @@ export function CommentCard({ comment }: CommentCardProps) {
         <span className="text-sm font-medium text-foreground">
           {authorName}
         </span>
-        {visibility ? (
-          <StatusBadge tone={visibility.tone} label={visibility.label} />
-        ) : null}
+        <CommentVisibilityBadge visibility={comment.visibility} />
         <time
           className="ml-auto text-xs text-muted-foreground"
           dateTime={comment.createdAt}
@@ -48,7 +43,7 @@ export function CommentCard({ comment }: CommentCardProps) {
 
       {comment.author?.email ? (
         <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
-          <Lock className="size-3" aria-hidden />
+          <Mail className="size-3" aria-hidden />
           {comment.author.email}
         </p>
       ) : null}

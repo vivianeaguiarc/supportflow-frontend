@@ -41,6 +41,17 @@ export async function proxyToBackend(
   init: RequestInit = {},
 ): Promise<NextResponse> {
   const response = await backendFetch(path, init);
+
+  // Status sem corpo (ex.: 204 No Content) não podem carregar body — construir
+  // um NextResponse com body não-nulo nesses casos lança em runtime.
+  if (
+    response.status === 204 ||
+    response.status === 205 ||
+    response.status === 304
+  ) {
+    return new NextResponse(null, { status: response.status });
+  }
+
   const body = await response.text();
 
   return new NextResponse(body, {

@@ -11,6 +11,15 @@ export { Checkbox } from "./checkbox";
 export { ConfirmDialog } from "./confirm-dialog";
 export * from "./constants";
 export { DataField } from "./data-field";
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "./dialog";
 export { EmptyState } from "./empty-state";
 export { ErrorState } from "./error-state";
 export { FilterSelect, type FilterSelectOption } from "./filter-select";

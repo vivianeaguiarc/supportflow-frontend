@@ -3,6 +3,9 @@ import type { ApiPaginatedResponse } from "@/types/api";
 import { unwrap } from "@/types/api";
 import type {
   AssignTicketRequest,
+  BulkAssignTicketsRequest,
+  BulkTicketOperationResult,
+  BulkUpdateTicketStatusRequest,
   CreateTicketRequest,
   ListTicketsParams,
   Ticket,
@@ -10,6 +13,7 @@ import type {
   TicketMetrics,
   TicketStatusTransitions,
   TicketSummary,
+  TicketSummaryParams,
   UpdateTicketStatusRequest,
 } from "@/types/ticket";
 
@@ -98,6 +102,28 @@ export const ticketsService = {
     return unwrap<Ticket>(response);
   },
 
+  /** `PATCH /tickets/bulk/status` — alteração de status em lote (atômica). */
+  async bulkUpdateStatus(
+    payload: BulkUpdateTicketStatusRequest,
+  ): Promise<BulkTicketOperationResult> {
+    const response = await httpClient<BulkTicketOperationResult>(
+      "/api/tickets/bulk/status",
+      { method: "PATCH", body: payload, local: true },
+    );
+    return unwrap<BulkTicketOperationResult>(response);
+  },
+
+  /** `PATCH /tickets/bulk/assign` — atribuição em lote (atômica). */
+  async bulkAssign(
+    payload: BulkAssignTicketsRequest,
+  ): Promise<BulkTicketOperationResult> {
+    const response = await httpClient<BulkTicketOperationResult>(
+      "/api/tickets/bulk/assign",
+      { method: "PATCH", body: payload, local: true },
+    );
+    return unwrap<BulkTicketOperationResult>(response);
+  },
+
   /** `GET /tickets/{id}/history` — trilha de auditoria (recurso cru). */
   async getHistory(id: string): Promise<TicketHistory> {
     const response = await httpClient<TicketHistory>(
@@ -116,10 +142,19 @@ export const ticketsService = {
     return unwrap<TicketStatusTransitions>(response);
   },
 
-  /** `GET /tickets/summary` — recurso cru. */
-  async getSummary(): Promise<TicketSummary> {
+  /** `GET /tickets/summary` — recurso cru (aceita filtros como `customerId`). */
+  async getSummary(params: TicketSummaryParams = {}): Promise<TicketSummary> {
     const response = await httpClient<TicketSummary>("/api/tickets/summary", {
       local: true,
+      params: {
+        status: params.status,
+        priority: params.priority,
+        customerId: params.customerId,
+        assignedToId: params.assignedToId,
+        unassigned: params.unassigned,
+        overdue: params.overdue,
+        search: params.search,
+      },
     });
     return unwrap<TicketSummary>(response);
   },

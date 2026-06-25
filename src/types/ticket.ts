@@ -92,6 +92,56 @@ export interface UpdateTicketStatusRequest {
   status: TicketStatus;
 }
 
+/**
+ * Contratos das operações em lote de tickets.
+ *
+ * Espelham os schemas OpenAPI reais do backend (`BulkUpdateTicketStatusRequest`,
+ * `BulkAssignTicketsRequest`, `BulkTicketOperationResult`).
+ *
+ * NOTA: ainda **não há** um pacote SDK gerado (`packages/sdk`) integrado a este
+ * frontend, nem uso de `openapi-fetch`. Mantemos estes tipos espelhados aqui —
+ * como todos os demais contratos em `@/types` — em vez de duplicar de um SDK
+ * inexistente. Os nomes batem com os schemas para troca futura trivial.
+ * TODO(sdk): quando `@supportflow/sdk` for adicionado ao frontend, reexportar
+ * estes tipos a partir dele e remover as definições manuais.
+ */
+
+/** Body de `PATCH /tickets/bulk/status` (schema `BulkUpdateTicketStatusRequest`). */
+export interface BulkUpdateTicketStatusRequest {
+  ticketIds: string[];
+  status: TicketStatus;
+  reason?: string;
+}
+
+/** Body de `PATCH /tickets/bulk/assign` (schema `BulkAssignTicketsRequest`). */
+export interface BulkAssignTicketsRequest {
+  ticketIds: string[];
+  assignedToId: string;
+  reason?: string;
+}
+
+export type BulkTicketOperation = "bulk_status_update" | "bulk_assign";
+
+/** Resposta dos endpoints bulk (schema `BulkTicketOperationResult`). */
+export interface BulkTicketOperationResult {
+  totalRequested: number;
+  totalUpdated: number;
+  updatedTicketIds: string[];
+  operation: BulkTicketOperation;
+  message: string;
+}
+
+/** Filtros aceitos por `GET /tickets/summary` (subconjunto da listagem). */
+export interface TicketSummaryParams {
+  status?: TicketStatus;
+  priority?: TicketPriority;
+  customerId?: string;
+  assignedToId?: string;
+  unassigned?: boolean;
+  overdue?: boolean;
+  search?: string;
+}
+
 /** Eventos da trilha de auditoria do chamado (schema `TicketHistoryEvent`). */
 export type TicketHistoryEvent =
   | "CREATED"

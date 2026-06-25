@@ -4,6 +4,6 @@ export { TicketHistory } from "./ticket-history";
 export { TicketPriorityBadge } from "./ticket-priority-badge";
 export { TicketStatusBadge } from "./ticket-status-badge";
 export { TicketsBulkActions } from "./tickets-bulk-actions";
-export { ticketColumns } from "./tickets-columns";
+export { ticketColumns, ticketColumnsBase } from "./tickets-columns";
 export { TicketsFilters } from "./tickets-filters";
 export { TicketsView } from "./tickets-view";

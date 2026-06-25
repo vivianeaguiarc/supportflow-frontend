@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ColumnDef } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
 import { type FormEvent } from "react";
 
 import {
@@ -112,6 +113,7 @@ const customerColumns: ColumnDef<Customer, any>[] = [
 
 /** Tela de clientes — reutiliza o DataTable genérico (server-side). */
 export function CustomersTable() {
+  const router = useRouter();
   const {
     pagination,
     sorting,
@@ -210,6 +212,7 @@ export function CustomersTable() {
             isError={isError}
             error={error}
             onRetry={() => refetch()}
+            onRowClick={(customer) => router.push(`/customers/${customer.id}`)}
             emptyState={{
               title: hasActiveFilters
                 ? "Nenhum cliente encontrado"

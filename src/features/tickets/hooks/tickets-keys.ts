@@ -1,4 +1,4 @@
-import type { ListTicketsParams } from "@/types/ticket";
+import type { ListTicketsParams, TicketSummaryParams } from "@/types/ticket";
 
 /**
  * Query keys centralizadas da feature de tickets.
@@ -14,7 +14,10 @@ export const ticketsKeys = {
   detail: (id: string) => [...ticketsKeys.all, "detail", id] as const,
   history: (id: string) => [...ticketsKeys.all, "history", id] as const,
   transitions: (id: string) => [...ticketsKeys.all, "transitions", id] as const,
-  summary: () => [...ticketsKeys.all, "summary"] as const,
+  summary: (params?: TicketSummaryParams) => {
+    const base = [...ticketsKeys.all, "summary"] as const;
+    return params ? ([...base, params] as const) : base;
+  },
   metrics: () => [...ticketsKeys.all, "metrics"] as const,
   customers: () => [...ticketsKeys.all, "customers"] as const,
   categories: () => [...ticketsKeys.all, "categories"] as const,

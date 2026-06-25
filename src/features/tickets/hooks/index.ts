@@ -1,9 +1,9 @@
 export { ticketsKeys } from "./tickets-keys";
 export { useAssignTicket } from "./use-assign-ticket";
 export {
-  type BulkActionResult,
-  useBulkTicketActions,
-} from "./use-bulk-ticket-actions";
+  useBulkAssignTickets,
+  useBulkUpdateTicketStatus,
+} from "./use-bulk-ticket-operations";
 export { useCategoryOptions } from "./use-category-options";
 export { useCreateTicket } from "./use-create-ticket";
 export { useCustomerOptions } from "./use-customer-options";

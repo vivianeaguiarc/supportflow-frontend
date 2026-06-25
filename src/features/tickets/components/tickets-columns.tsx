@@ -34,12 +34,11 @@ function shortId(id: string): string {
 }
 
 /**
- * Colunas da tabela de tickets. Apenas mapeiam o domínio para o DataTable
- * genérico — os ids das colunas ordenáveis coincidem com `sortBy` do backend
- * (`priority`, `slaDueAt`, `createdAt`) para a ordenação server-side funcionar.
+ * Colunas de domínio do ticket (sem seleção). Os ids das colunas ordenáveis
+ * coincidem com `sortBy` do backend (`priority`, `slaDueAt`, `createdAt`) para a
+ * ordenação server-side funcionar. Reutilizáveis em qualquer tabela de tickets.
  */
-export const ticketColumns: ColumnDef<Ticket, any>[] = [
-  getSelectionColumn<Ticket>(),
+export const ticketColumnsBase: ColumnDef<Ticket, any>[] = [
   {
     accessorKey: "title",
     enableSorting: false,
@@ -158,4 +157,10 @@ export const ticketColumns: ColumnDef<Ticket, any>[] = [
       </Link>
     ),
   },
+];
+
+/** Colunas completas da listagem de tickets, com a coluna de seleção. */
+export const ticketColumns: ColumnDef<Ticket, any>[] = [
+  getSelectionColumn<Ticket>(),
+  ...ticketColumnsBase,
 ];

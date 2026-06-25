@@ -37,6 +37,7 @@ export type Permission =
   | "directory:view"
   | "users:list"
   | "notifications:view"
+  | "audit:view"
   | "settings:access";
 
 /** Roles autorizadas por permissão (espelho do RBAC do backend). */
@@ -73,6 +74,8 @@ export const PERMISSION_ROLES: Record<Permission, readonly UserRole[]> = {
     "CUSTOMER",
     "OMBUDSMAN",
   ],
+  // GET /admin/audit-logs exige AUDIT_READ no backend → ADMIN e SUPERVISOR.
+  "audit:view": ["ADMIN", "SUPERVISOR"],
   "settings:access": ["ADMIN"],
 };
 

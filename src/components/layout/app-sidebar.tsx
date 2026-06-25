@@ -6,6 +6,7 @@ import {
   LifeBuoy,
   LogOut,
   type LucideIcon,
+  ScrollText,
   Ticket,
   UserCog,
   Users,
@@ -60,6 +61,12 @@ const navigation: NavItem[] = [
     href: "/notifications",
     icon: Bell,
     permission: "notifications:view",
+  },
+  {
+    name: "Auditoria",
+    href: "/audit",
+    icon: ScrollText,
+    permission: "audit:view",
   },
 ];
 

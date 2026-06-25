@@ -1,5 +1,6 @@
 import { httpClient } from "@/services/http-client";
 import type { ApiPaginatedResponse } from "@/types/api";
+import { unwrap } from "@/types/api";
 import type { ListUsersParams, User } from "@/types/user";
 
 type QueryParams = Record<string, string | number | boolean | undefined | null>;
@@ -38,6 +39,15 @@ export const usersService = {
       local: true,
       params: toQueryParams(filters),
     });
+  },
+
+  /** `GET /users/{id}` — usuário individual (desembrulhado do envelope). */
+  async getById(id: string): Promise<User> {
+    const response = await httpClient<User>(
+      `/api/users/${encodeURIComponent(id)}`,
+      { local: true },
+    );
+    return unwrap<User>(response);
   },
 };
 

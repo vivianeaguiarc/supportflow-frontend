@@ -17,7 +17,8 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageSection } from "@/components/ui/page-section";
 import { Separator } from "@/components/ui/separator";
 import { UserAvatar } from "@/components/ui/user-avatar";
-import { CommentsTimeline } from "@/features/comments";
+import { AttachmentList, UploadAttachmentField } from "@/features/attachments";
+import { CommentTimeline } from "@/features/comments";
 import {
   TicketActions,
   TicketHistory,
@@ -205,9 +206,22 @@ export default function TicketDetailPage({ params }: TicketDetailPageProps) {
                   </CardContent>
                 </Card>
 
-                <Can perform="comments:view">
+                <Can perform="tickets:view-attachments">
+                  <PageSection title="Anexos">
+                    <Card>
+                      <CardContent className="space-y-4">
+                        <AttachmentList ticketId={ticket.id} />
+                        <Can perform="tickets:upload-attachment">
+                          <UploadAttachmentField ticketId={ticket.id} />
+                        </Can>
+                      </CardContent>
+                    </Card>
+                  </PageSection>
+                </Can>
+
+                <Can perform="tickets:view-internal-comments">
                   <PageSection title="Comentários internos">
-                    <CommentsTimeline ticketId={ticket.id} />
+                    <CommentTimeline ticketId={ticket.id} />
                   </PageSection>
                 </Can>
 

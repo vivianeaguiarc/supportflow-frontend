@@ -1,3 +1,3 @@
 export { commentsKeys } from "./comments-keys";
-export { useCreateComment } from "./use-create-comment";
+export { useCreateTicketComment } from "./use-create-ticket-comment";
 export { useTicketComments } from "./use-ticket-comments";

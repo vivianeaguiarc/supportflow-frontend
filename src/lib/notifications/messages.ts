@@ -26,6 +26,9 @@ export const MESSAGES = {
   comment: {
     added: "Comentário adicionado.",
   },
+  attachment: {
+    uploaded: "Anexo enviado.",
+  },
   dashboard: {
     refreshed: "Dados atualizados.",
   },

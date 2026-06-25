@@ -27,8 +27,10 @@ export type Permission =
   | "tickets:create"
   | "tickets:changeStatus"
   | "tickets:assign"
-  | "comments:view"
-  | "comments:create"
+  | "tickets:comment"
+  | "tickets:view-internal-comments"
+  | "tickets:upload-attachment"
+  | "tickets:view-attachments"
   | "metrics:view"
   | "analytics:view"
   | "analytics:csat"
@@ -43,11 +45,16 @@ export const PERMISSION_ROLES: Record<Permission, readonly UserRole[]> = {
   "tickets:create": ["ADMIN", "SUPERVISOR", "AGENT", "CUSTOMER"],
   "tickets:changeStatus": ["ADMIN", "SUPERVISOR", "AGENT", "OMBUDSMAN"],
   "tickets:assign": ["ADMIN", "SUPERVISOR"],
-  // Comentários internos (rota /tickets/{id}/internal-comments no backend):
-  // visíveis e editáveis apenas pela equipe de atendimento. CUSTOMER/OMBUDSMAN
-  // não têm acesso (403 no backend).
-  "comments:view": ["ADMIN", "SUPERVISOR", "AGENT"],
-  "comments:create": ["ADMIN", "SUPERVISOR", "AGENT"],
+  // Comentários internos (rota /tickets/{id}/comments no backend): visíveis e
+  // criáveis apenas pela equipe de atendimento. CUSTOMER/OMBUDSMAN não têm
+  // acesso (403 no backend).
+  "tickets:view-internal-comments": ["ADMIN", "SUPERVISOR", "AGENT"],
+  "tickets:comment": ["ADMIN", "SUPERVISOR", "AGENT"],
+  // Anexos (rota /tickets/{id}/attachments no backend): a equipe envia/vê; o
+  // CUSTOMER pode ver os anexos dos próprios chamados (GET libera CUSTOMER, mas
+  // o POST é restrito à equipe — validado de verdade no backend).
+  "tickets:upload-attachment": ["ADMIN", "SUPERVISOR", "AGENT"],
+  "tickets:view-attachments": ["ADMIN", "SUPERVISOR", "AGENT", "CUSTOMER"],
   "metrics:view": ["ADMIN", "SUPERVISOR", "AGENT"],
   // analytics.read no backend: overview, tickets-by-status/priority, sla, agents.
   "analytics:view": ["ADMIN", "SUPERVISOR"],

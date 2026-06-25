@@ -1,8 +1,8 @@
 /**
  * Contratos de comentários de chamados.
- * Fonte da verdade: OpenAPI do supportflow-backend (tag "Ticket Internal
- * Comments", schemas `TicketComment`, `TicketCommentWithAuthor`,
- * `CreateCommentRequest`, `CommentVisibility`).
+ * Fonte da verdade: OpenAPI do supportflow-backend (tag "Ticket Comments",
+ * rota `/tickets/{id}/comments`, schemas `TicketComment`,
+ * `TicketCommentWithAuthor`, `CreateCommentRequest`, `CommentVisibility`).
  *
  * NOTA: hoje o backend só suporta comentários INTERNOS (visíveis a
  * ADMIN/SUPERVISOR/AGENT — o cliente não tem acesso). O enum `CommentVisibility`
@@ -32,7 +32,7 @@ export interface TicketCommentWithAuthor extends TicketComment {
   author?: UserSummary;
 }
 
-/** Body de `POST /tickets/{ticketId}/internal-comments`. */
+/** Body de `POST /tickets/{ticketId}/comments`. */
 export interface CreateCommentRequest {
   /** Conteúdo do comentário (1–5000 caracteres). */
   content: string;

@@ -9,13 +9,14 @@ import { commentsService } from "../services";
 import { commentsKeys } from "./comments-keys";
 
 /**
- * Cria um comentário interno (`POST .../internal-comments`).
+ * Cria um comentário no ticket (`POST /tickets/{id}/comments`).
  *
  * Em caso de sucesso invalida a lista de comentários e o histórico do ticket
  * (o backend gera um evento `COMMENT_ADDED`). O toast de sucesso é disparado
- * centralmente pelo `MutationCache` via `meta.successMessage`.
+ * centralmente pelo `MutationCache` via `meta.successMessage`; erros são
+ * tratados por `ApiError` + `getErrorMessage()` (exposto como `errorMessage`).
  */
-export function useCreateComment(ticketId: string) {
+export function useCreateTicketComment(ticketId: string) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({

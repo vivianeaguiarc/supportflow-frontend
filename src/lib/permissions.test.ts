@@ -25,10 +25,26 @@ describe("permissions (RBAC espelhado do backend)", () => {
     });
 
     it("comentários internos: equipe pode, cliente não", () => {
-      expect(hasPermission("AGENT", "comments:view")).toBe(true);
-      expect(hasPermission("SUPERVISOR", "comments:create")).toBe(true);
-      expect(hasPermission("CUSTOMER", "comments:view")).toBe(false);
-      expect(hasPermission("OMBUDSMAN", "comments:create")).toBe(false);
+      expect(hasPermission("AGENT", "tickets:view-internal-comments")).toBe(
+        true,
+      );
+      expect(hasPermission("SUPERVISOR", "tickets:comment")).toBe(true);
+      expect(hasPermission("CUSTOMER", "tickets:view-internal-comments")).toBe(
+        false,
+      );
+      expect(hasPermission("OMBUDSMAN", "tickets:comment")).toBe(false);
+    });
+
+    it("anexos: equipe envia; cliente vê os próprios, mas não envia", () => {
+      expect(hasPermission("AGENT", "tickets:upload-attachment")).toBe(true);
+      expect(hasPermission("ADMIN", "tickets:upload-attachment")).toBe(true);
+      expect(hasPermission("CUSTOMER", "tickets:view-attachments")).toBe(true);
+      expect(hasPermission("CUSTOMER", "tickets:upload-attachment")).toBe(
+        false,
+      );
+      expect(hasPermission("OMBUDSMAN", "tickets:view-attachments")).toBe(
+        false,
+      );
     });
 
     it("nega tudo quando não há role", () => {

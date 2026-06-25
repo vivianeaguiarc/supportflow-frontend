@@ -1,18 +1,9 @@
 import { Lock } from "lucide-react";
 
-import { type Tone } from "@/components/ui/constants";
 import { StatusBadge } from "@/components/ui/status-badge";
-import type {
-  CommentVisibility,
-  TicketCommentWithAuthor,
-} from "@/types/comment";
 
-const VISIBILITY_META: Record<
-  CommentVisibility,
-  { label: string; tone: Tone }
-> = {
-  INTERNAL: { label: "Interno", tone: "warning" },
-};
+import type { TicketCommentWithAuthor } from "../types";
+import { COMMENT_VISIBILITY_META } from "../types";
 
 function formatDateTime(value: string): string {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -32,7 +23,7 @@ interface CommentCardProps {
 /** Cartão de um comentário: autor, data, tipo (visibilidade) e conteúdo. */
 export function CommentCard({ comment }: CommentCardProps) {
   const authorName = comment.author?.name ?? shortenId(comment.authorId);
-  const visibility = VISIBILITY_META[comment.visibility];
+  const visibility = COMMENT_VISIBILITY_META[comment.visibility];
 
   return (
     <article className="rounded-lg border border-border bg-card p-3">

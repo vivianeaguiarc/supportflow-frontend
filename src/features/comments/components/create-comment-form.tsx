@@ -6,6 +6,10 @@ import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import {
+  FilterSelect,
+  type FilterSelectOption,
+} from "@/components/ui/filter-select";
+import {
   Form,
   FormControl,
   FormDescription,
@@ -18,28 +22,43 @@ import { Textarea } from "@/components/ui/textarea";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { useAuth } from "@/hooks/use-auth";
 
-import { useCreateComment } from "../hooks";
+import { useCreateTicketComment } from "../hooks";
 import { type CreateCommentFormValues, createCommentSchema } from "../schemas";
+import { COMMENT_VISIBILITY_META, COMMENT_VISIBILITY_VALUES } from "../types";
 
-interface CommentFormProps {
+// O seletor de visibilidade só faz sentido quando há mais de uma opção. Hoje o
+// backend só aceita `INTERNAL`, então este bloco fica oculto — mas o formulário
+// já está pronto para visibilidades públicas sem refatoração.
+const CAN_CHOOSE_VISIBILITY = COMMENT_VISIBILITY_VALUES.length > 1;
+
+const VISIBILITY_OPTIONS: FilterSelectOption[] = COMMENT_VISIBILITY_VALUES.map(
+  (value) => ({ value, label: COMMENT_VISIBILITY_META[value].label }),
+);
+
+interface CreateCommentFormProps {
   ticketId: string;
 }
 
 /** Formulário de novo comentário interno (React Hook Form + Zod). */
-export function CommentForm({ ticketId }: CommentFormProps) {
+export function CreateCommentForm({ ticketId }: CreateCommentFormProps) {
   const { user } = useAuth();
   const { mutate, isPending, isError, errorMessage } =
-    useCreateComment(ticketId);
+    useCreateTicketComment(ticketId);
 
   const form = useForm<CreateCommentFormValues>({
     resolver: zodResolver(createCommentSchema),
-    defaultValues: { content: "" },
+    defaultValues: { content: "", visibility: "INTERNAL" },
   });
 
   function onSubmit(values: CreateCommentFormValues) {
+    // O DTO real (`CreateCommentRequest`) só possui `content`; visibility fica
+    // reservado para evolução futura e não é enviado enquanto for sempre INTERNAL.
     mutate(
       { content: values.content },
-      { onSuccess: () => form.reset({ content: "" }) },
+      {
+        onSuccess: () =>
+          form.reset({ content: "", visibility: values.visibility }),
+      },
     );
   }
 
@@ -74,6 +93,27 @@ export function CommentForm({ ticketId }: CommentFormProps) {
               </FormItem>
             )}
           />
+
+          {CAN_CHOOSE_VISIBILITY ? (
+            <FormField
+              control={form.control}
+              name="visibility"
+              render={({ field }) => (
+                <FormItem className="w-48">
+                  <FormLabel>Visibilidade</FormLabel>
+                  <FormControl>
+                    <FilterSelect
+                      options={VISIBILITY_OPTIONS}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isPending}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : null}
 
           {isError && errorMessage ? (
             <p className="text-sm text-destructive" role="alert">

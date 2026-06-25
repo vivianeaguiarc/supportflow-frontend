@@ -6,6 +6,7 @@ import {
   LogOut,
   type LucideIcon,
   Ticket,
+  UserCog,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -46,6 +47,12 @@ const navigation: NavItem[] = [
     href: "/customers",
     icon: Users,
     permission: "directory:view",
+  },
+  {
+    name: "Equipe",
+    href: "/users",
+    icon: UserCog,
+    permission: "users:list",
   },
 ];
 

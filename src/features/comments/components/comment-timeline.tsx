@@ -13,17 +13,18 @@ import { getErrorMessage } from "@/lib/api-error";
 
 import { useTicketComments } from "../hooks";
 import { CommentCard } from "./comment-card";
-import { CommentForm } from "./comment-form";
+import { CreateCommentForm } from "./create-comment-form";
 
-interface CommentsTimelineProps {
+interface CommentTimelineProps {
   ticketId: string;
 }
 
 /**
  * Seção de comentários internos do ticket: timeline (ordem cronológica) +
- * formulário de novo comentário. Cobre loading, erro, vazio e submitting.
+ * formulário de novo comentário. Cobre loading, erro, vazio e submitting, e
+ * gateia a criação por `tickets:comment` (RBAC visual).
  */
-export function CommentsTimeline({ ticketId }: CommentsTimelineProps) {
+export function CommentTimeline({ ticketId }: CommentTimelineProps) {
   const { data, isLoading, isError, error, refetch } =
     useTicketComments(ticketId);
 
@@ -68,8 +69,8 @@ export function CommentsTimeline({ ticketId }: CommentsTimelineProps) {
           </Timeline>
         )}
 
-        <Can perform="comments:create">
-          <CommentForm ticketId={ticketId} />
+        <Can perform="tickets:comment">
+          <CreateCommentForm ticketId={ticketId} />
         </Can>
       </CardContent>
     </Card>

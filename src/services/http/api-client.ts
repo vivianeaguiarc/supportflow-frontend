@@ -98,11 +98,16 @@ export async function httpClient<T>(
 
   const url = resolveUrl(path, params, local);
 
+  // Uploads usam `multipart/form-data`: não serializamos como JSON e deixamos o
+  // navegador definir o `Content-Type` com o boundary correto.
+  const isFormData =
+    typeof FormData !== "undefined" && body instanceof FormData;
+
   const execute = async (): Promise<Response> => {
     const requestHeaders = new Headers(headers);
     requestHeaders.set("Accept", "application/json");
 
-    if (body !== undefined) {
+    if (body !== undefined && !isFormData) {
       requestHeaders.set("Content-Type", "application/json");
     }
 
@@ -110,7 +115,12 @@ export async function httpClient<T>(
       ...init,
       headers: requestHeaders,
       credentials: "include",
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body:
+        body === undefined
+          ? undefined
+          : isFormData
+            ? (body as FormData)
+            : JSON.stringify(body),
     });
   };
 

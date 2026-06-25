@@ -12,7 +12,7 @@ import {
 import type { TicketCommentWithAuthor } from "@/types/comment";
 
 import { commentsKeys } from "./comments-keys";
-import { useCreateComment } from "./use-create-comment";
+import { useCreateTicketComment } from "./use-create-ticket-comment";
 import { useTicketComments } from "./use-ticket-comments";
 
 vi.mock("@/features/comments/services/comments-service", () => ({
@@ -67,14 +67,14 @@ describe("useTicketComments", () => {
   });
 });
 
-describe("useCreateComment", () => {
+describe("useCreateTicketComment", () => {
   it("cria, invalida comentários + histórico e notifica sucesso", async () => {
     vi.mocked(commentsService.create).mockResolvedValue(makeComment());
     const notifications = mockNotificationService();
     const { wrapper, queryClient } = createQueryWrapper();
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useCreateComment("ticket-1"), {
+    const { result } = renderHook(() => useCreateTicketComment("ticket-1"), {
       wrapper,
     });
     act(() => result.current.mutate({ content: "Novo comentário" }));
@@ -99,7 +99,7 @@ describe("useCreateComment", () => {
     const notifications = mockNotificationService();
     const { wrapper } = createQueryWrapper();
 
-    const { result } = renderHook(() => useCreateComment("ticket-1"), {
+    const { result } = renderHook(() => useCreateTicketComment("ticket-1"), {
       wrapper,
     });
     act(() => result.current.mutate({ content: "x" }));

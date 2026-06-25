@@ -4,4 +4,8 @@ export type {
   TicketComment,
   TicketCommentWithAuthor,
   UserSummary,
-} from "./comment.types";
+} from "./comment-types";
+export {
+  COMMENT_VISIBILITY_META,
+  COMMENT_VISIBILITY_VALUES,
+} from "./comment-types";

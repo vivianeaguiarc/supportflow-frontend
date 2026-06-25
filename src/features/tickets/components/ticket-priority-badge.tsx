@@ -1,4 +1,5 @@
-import { Badge } from "@/components/ui/badge";
+import type { PriorityLevel } from "@/components/ui/constants";
+import { PriorityBadge } from "@/components/ui/priority-badge";
 
 import type { TicketPriority } from "../types";
 
@@ -9,24 +10,23 @@ export const TICKET_PRIORITY_LABELS: Record<TicketPriority, string> = {
   URGENT: "Urgente",
 };
 
-const priorityVariants: Record<
-  TicketPriority,
-  "default" | "secondary" | "outline" | "destructive"
-> = {
-  LOW: "secondary",
-  MEDIUM: "outline",
-  HIGH: "default",
-  URGENT: "destructive",
+const TICKET_PRIORITY_LEVEL: Record<TicketPriority, PriorityLevel> = {
+  LOW: "low",
+  MEDIUM: "medium",
+  HIGH: "high",
+  URGENT: "urgent",
 };
 
 interface TicketPriorityBadgeProps {
   priority: TicketPriority;
 }
 
+/** Badge de prioridade de ticket: mapeia o enum de domínio para o `PriorityBadge` do DS. */
 export function TicketPriorityBadge({ priority }: TicketPriorityBadgeProps) {
   return (
-    <Badge variant={priorityVariants[priority]}>
-      {TICKET_PRIORITY_LABELS[priority]}
-    </Badge>
+    <PriorityBadge
+      level={TICKET_PRIORITY_LEVEL[priority]}
+      label={TICKET_PRIORITY_LABELS[priority]}
+    />
   );
 }

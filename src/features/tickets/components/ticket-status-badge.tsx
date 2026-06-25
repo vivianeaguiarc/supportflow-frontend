@@ -1,4 +1,5 @@
-import { Badge } from "@/components/ui/badge";
+import type { Tone } from "@/components/ui/constants";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 import type { TicketStatus } from "../types";
 
@@ -11,10 +12,25 @@ export const TICKET_STATUS_LABELS: Record<TicketStatus, string> = {
   CLOSED: "Fechado",
 };
 
+const TICKET_STATUS_TONE: Record<TicketStatus, Tone> = {
+  OPEN: "info",
+  IN_PROGRESS: "warning",
+  WAITING_CUSTOMER: "muted",
+  ESCALATED: "danger",
+  RESOLVED: "success",
+  CLOSED: "neutral",
+};
+
 interface TicketStatusBadgeProps {
   status: TicketStatus;
 }
 
+/** Badge de status de ticket: mapeia o enum de domínio para o `StatusBadge` do DS. */
 export function TicketStatusBadge({ status }: TicketStatusBadgeProps) {
-  return <Badge variant="outline">{TICKET_STATUS_LABELS[status]}</Badge>;
+  return (
+    <StatusBadge
+      tone={TICKET_STATUS_TONE[status]}
+      label={TICKET_STATUS_LABELS[status]}
+    />
+  );
 }

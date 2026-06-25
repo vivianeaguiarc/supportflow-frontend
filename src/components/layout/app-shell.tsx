@@ -4,7 +4,7 @@ import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 
 interface AppShellProps {
-  title: string;
+  title?: string;
   description?: string;
   children: ReactNode;
 }

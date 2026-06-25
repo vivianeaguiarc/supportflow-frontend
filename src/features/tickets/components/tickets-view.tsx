@@ -1,19 +1,21 @@
 "use client";
 
-import { AlertCircle, Inbox, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
+import { LoadingState } from "@/components/ui/loading-state";
+import { Pagination } from "@/components/ui/pagination";
 import { getErrorMessage } from "@/lib/api-error";
 import { cn } from "@/lib/utils";
 import type { TicketPriority, TicketStatus } from "@/types/ticket";
 
 import { useTickets } from "../hooks";
 import { TicketsFilters } from "./tickets-filters";
-import { TicketsPagination } from "./tickets-pagination";
 import { TicketsTable } from "./tickets-table";
 
 const PAGE_SIZE = 10;
@@ -145,36 +147,42 @@ export function TicketsView() {
       <Card>
         <CardContent className="py-4">
           {isLoading ? (
-            <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Skeleton key={index} className="h-12 w-full" />
-              ))}
-            </div>
+            <LoadingState label="Carregando chamados..." />
           ) : isError ? (
-            <div className="flex items-center gap-3 py-8 text-sm text-muted-foreground">
-              <AlertCircle className="size-4 text-destructive" />
-              {getErrorMessage(error, "Não foi possível carregar os chamados.")}
-            </div>
+            <ErrorState
+              title="Não foi possível carregar os chamados"
+              description={getErrorMessage(
+                error,
+                "Tente novamente em instantes.",
+              )}
+              onRetry={() => refetch()}
+            />
           ) : tickets.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 py-12 text-center text-sm text-muted-foreground">
-              <Inbox className="size-6" />
-              <p>
-                {hasActiveFilters
-                  ? "Nenhum chamado encontrado com os filtros atuais."
-                  : "Nenhum chamado cadastrado ainda."}
-              </p>
-              {hasActiveFilters ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push(pathname)}
-                >
-                  Limpar filtros
-                </Button>
-              ) : null}
-            </div>
+            <EmptyState
+              title={
+                hasActiveFilters
+                  ? "Nenhum chamado encontrado"
+                  : "Nenhum chamado cadastrado ainda"
+              }
+              description={
+                hasActiveFilters
+                  ? "Ajuste ou limpe os filtros para ver mais resultados."
+                  : undefined
+              }
+              action={
+                hasActiveFilters ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push(pathname)}
+                  >
+                    Limpar filtros
+                  </Button>
+                ) : undefined
+              }
+            />
           ) : (
-            <>
+            <div className="space-y-4">
               <TicketsTable
                 tickets={tickets}
                 sortBy={filters.sortBy}
@@ -182,13 +190,14 @@ export function TicketsView() {
                 onToggleSort={handleToggleSort}
               />
               {data?.meta ? (
-                <TicketsPagination
-                  meta={data.meta}
-                  isFetching={isFetching}
+                <Pagination
+                  page={data.meta.page}
+                  totalPages={data.meta.totalPages}
                   onPageChange={(page) => setParams({ page }, false)}
+                  isLoading={isFetching}
                 />
               ) : null}
-            </>
+            </div>
           )}
         </CardContent>
       </Card>

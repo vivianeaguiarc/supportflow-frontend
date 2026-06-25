@@ -4,6 +4,7 @@ import { type FormEvent, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getErrorMessage } from "@/lib/api-error";
@@ -12,9 +13,6 @@ import type { Ticket, TicketStatus } from "@/types/ticket";
 import { useAssignTicket } from "../hooks/use-assign-ticket";
 import { useUpdateTicketStatus } from "../hooks/use-update-ticket-status";
 import { TICKET_STATUS_LABELS } from "./ticket-status-badge";
-
-const SELECT_CLASS =
-  "h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 const STATUS_OPTIONS = Object.entries(TICKET_STATUS_LABELS) as [
   TicketStatus,
@@ -36,8 +34,7 @@ export function TicketActions({ ticket }: TicketActionsProps) {
   const trimmedAgentId = agentId.trim();
   const assigneeUnchanged = trimmedAgentId === (ticket.assignedToId ?? "");
 
-  function handleStatusSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function handleStatusConfirm() {
     if (statusUnchanged) return;
 
     updateStatus.mutate(
@@ -73,11 +70,11 @@ export function TicketActions({ ticket }: TicketActionsProps) {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleStatusSubmit} className="space-y-2">
+      <div className="space-y-2">
         <Label htmlFor="ticket-status">Alterar status</Label>
         <select
           id="ticket-status"
-          className={SELECT_CLASS}
+          className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50"
           value={status}
           onChange={(event) => setStatus(event.target.value as TicketStatus)}
           disabled={updateStatus.isPending}
@@ -88,15 +85,23 @@ export function TicketActions({ ticket }: TicketActionsProps) {
             </option>
           ))}
         </select>
-        <Button
-          type="submit"
-          size="sm"
-          className="w-full"
-          disabled={statusUnchanged || updateStatus.isPending}
-        >
-          {updateStatus.isPending ? "Salvando..." : "Atualizar status"}
-        </Button>
-      </form>
+        <ConfirmDialog
+          trigger={
+            <Button
+              type="button"
+              size="sm"
+              className="w-full"
+              disabled={statusUnchanged || updateStatus.isPending}
+            >
+              {updateStatus.isPending ? "Salvando..." : "Atualizar status"}
+            </Button>
+          }
+          title="Alterar status do chamado"
+          description={`Confirmar a alteração do status para "${TICKET_STATUS_LABELS[status]}"?`}
+          confirmLabel="Alterar"
+          onConfirm={handleStatusConfirm}
+        />
+      </div>
 
       <form onSubmit={handleAssignSubmit} className="space-y-2">
         <Label htmlFor="ticket-assignee">Atribuir responsável</Label>

@@ -1,26 +1,25 @@
 "use client";
 
-import { Search, X } from "lucide-react";
 import { type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  FilterSelect,
+  type FilterSelectOption,
+} from "@/components/ui/filter-select";
+import { SearchInput } from "@/components/ui/search-input";
 import type { TicketPriority, TicketStatus } from "@/types/ticket";
 
 import { TICKET_PRIORITY_LABELS } from "./ticket-priority-badge";
 import { TICKET_STATUS_LABELS } from "./ticket-status-badge";
 
-const SELECT_CLASS =
-  "h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+const STATUS_OPTIONS: FilterSelectOption[] = Object.entries(
+  TICKET_STATUS_LABELS,
+).map(([value, label]) => ({ value, label }));
 
-const STATUS_OPTIONS = Object.entries(TICKET_STATUS_LABELS) as [
-  TicketStatus,
-  string,
-][];
-const PRIORITY_OPTIONS = Object.entries(TICKET_PRIORITY_LABELS) as [
-  TicketPriority,
-  string,
-][];
+const PRIORITY_OPTIONS: FilterSelectOption[] = Object.entries(
+  TICKET_PRIORITY_LABELS,
+).map(([value, label]) => ({ value, label }));
 
 export interface TicketsFiltersValue {
   search?: string;
@@ -51,61 +50,43 @@ export function TicketsFilters({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-        <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            key={filters.search ?? ""}
-            name="search"
-            defaultValue={filters.search ?? ""}
-            placeholder="Buscar por título ou descrição..."
-            className="w-64 pl-8"
-            aria-label="Buscar chamados"
-          />
-        </div>
+        <SearchInput
+          key={filters.search ?? ""}
+          name="search"
+          defaultValue={filters.search ?? ""}
+          placeholder="Buscar por título ou descrição..."
+          containerClassName="w-64"
+          aria-label="Buscar chamados"
+        />
         <Button type="submit" variant="outline" size="sm">
           Buscar
         </Button>
       </form>
 
-      <select
+      <FilterSelect
         aria-label="Filtrar por status"
-        className={SELECT_CLASS}
+        className="w-48"
+        placeholder="Todos os status"
+        options={STATUS_OPTIONS}
         value={filters.status ?? ""}
-        onChange={(event) =>
-          onChange({
-            status: (event.target.value || undefined) as TicketStatus,
-          })
+        onValueChange={(value) =>
+          onChange({ status: (value || undefined) as TicketStatus })
         }
-      >
-        <option value="">Todos os status</option>
-        {STATUS_OPTIONS.map(([value, label]) => (
-          <option key={value} value={value}>
-            {label}
-          </option>
-        ))}
-      </select>
+      />
 
-      <select
+      <FilterSelect
         aria-label="Filtrar por prioridade"
-        className={SELECT_CLASS}
+        className="w-48"
+        placeholder="Todas as prioridades"
+        options={PRIORITY_OPTIONS}
         value={filters.priority ?? ""}
-        onChange={(event) =>
-          onChange({
-            priority: (event.target.value || undefined) as TicketPriority,
-          })
+        onValueChange={(value) =>
+          onChange({ priority: (value || undefined) as TicketPriority })
         }
-      >
-        <option value="">Todas as prioridades</option>
-        {PRIORITY_OPTIONS.map(([value, label]) => (
-          <option key={value} value={value}>
-            {label}
-          </option>
-        ))}
-      </select>
+      />
 
       {hasActiveFilters ? (
         <Button variant="ghost" size="sm" onClick={onReset}>
-          <X />
           Limpar
         </Button>
       ) : null}

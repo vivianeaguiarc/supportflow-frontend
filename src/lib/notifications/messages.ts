@@ -23,6 +23,9 @@ export const MESSAGES = {
     assigned: "Responsável alterado.",
     bulkUpdated: pluralizeTickets,
   },
+  comment: {
+    added: "Comentário adicionado.",
+  },
   dashboard: {
     refreshed: "Dados atualizados.",
   },

@@ -32,4 +32,5 @@ export { PriorityBadge } from "./priority-badge";
 export { SearchInput } from "./search-input";
 export { StatusBadge } from "./status-badge";
 export { Textarea } from "./textarea";
+export { Timeline, TimelineItem } from "./timeline";
 export { UserAvatar } from "./user-avatar";

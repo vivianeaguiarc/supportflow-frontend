@@ -24,6 +24,13 @@ describe("permissions (RBAC espelhado do backend)", () => {
       expect(hasPermission("OMBUDSMAN", "tickets:view")).toBe(true);
     });
 
+    it("comentários internos: equipe pode, cliente não", () => {
+      expect(hasPermission("AGENT", "comments:view")).toBe(true);
+      expect(hasPermission("SUPERVISOR", "comments:create")).toBe(true);
+      expect(hasPermission("CUSTOMER", "comments:view")).toBe(false);
+      expect(hasPermission("OMBUDSMAN", "comments:create")).toBe(false);
+    });
+
     it("nega tudo quando não há role", () => {
       expect(hasPermission(null, "tickets:view")).toBe(false);
       expect(hasPermission(undefined, "dashboard:view")).toBe(false);

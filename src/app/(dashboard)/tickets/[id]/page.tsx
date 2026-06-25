@@ -17,6 +17,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageSection } from "@/components/ui/page-section";
 import { Separator } from "@/components/ui/separator";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { CommentsTimeline } from "@/features/comments";
 import {
   TicketActions,
   TicketHistory,
@@ -203,6 +204,12 @@ export default function TicketDetailPage({ params }: TicketDetailPageProps) {
                     </dl>
                   </CardContent>
                 </Card>
+
+                <Can perform="comments:view">
+                  <PageSection title="Comentários internos">
+                    <CommentsTimeline ticketId={ticket.id} />
+                  </PageSection>
+                </Can>
 
                 <PageSection title="Histórico">
                   <TicketHistory ticketId={ticket.id} />

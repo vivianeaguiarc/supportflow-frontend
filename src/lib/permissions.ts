@@ -27,6 +27,8 @@ export type Permission =
   | "tickets:create"
   | "tickets:changeStatus"
   | "tickets:assign"
+  | "comments:view"
+  | "comments:create"
   | "metrics:view"
   | "analytics:view"
   | "analytics:csat"
@@ -41,6 +43,11 @@ export const PERMISSION_ROLES: Record<Permission, readonly UserRole[]> = {
   "tickets:create": ["ADMIN", "SUPERVISOR", "AGENT", "CUSTOMER"],
   "tickets:changeStatus": ["ADMIN", "SUPERVISOR", "AGENT", "OMBUDSMAN"],
   "tickets:assign": ["ADMIN", "SUPERVISOR"],
+  // Comentários internos (rota /tickets/{id}/internal-comments no backend):
+  // visíveis e editáveis apenas pela equipe de atendimento. CUSTOMER/OMBUDSMAN
+  // não têm acesso (403 no backend).
+  "comments:view": ["ADMIN", "SUPERVISOR", "AGENT"],
+  "comments:create": ["ADMIN", "SUPERVISOR", "AGENT"],
   "metrics:view": ["ADMIN", "SUPERVISOR", "AGENT"],
   // analytics.read no backend: overview, tickets-by-status/priority, sla, agents.
   "analytics:view": ["ADMIN", "SUPERVISOR"],

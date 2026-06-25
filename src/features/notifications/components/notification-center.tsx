@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/filter-select";
 
 import {
-  useMarkAllNotificationsRead,
+  useMarkAllNotificationsAsRead,
   useUnreadNotificationsCount,
 } from "../hooks";
 import { NotificationList } from "./notification-list";
@@ -26,7 +26,7 @@ const FILTER_OPTIONS: FilterSelectOption[] = [
 export function NotificationCenter() {
   const [filter, setFilter] = useState<Filter>("all");
   const { data: unreadCount = 0 } = useUnreadNotificationsCount();
-  const { mutate: markAllRead, isPending } = useMarkAllNotificationsRead();
+  const { mutate: markAllRead, isPending } = useMarkAllNotificationsAsRead();
 
   return (
     <div className="space-y-4">

@@ -11,8 +11,8 @@ import type { NotificationWithTicket } from "@/types/notification";
 
 import { notificationsService } from "../services/notifications-service";
 import { notificationsKeys } from "./notifications-keys";
-import { useMarkAllNotificationsRead } from "./use-mark-all-notifications-read";
-import { useMarkNotificationRead } from "./use-mark-notification-read";
+import { useMarkAllNotificationsAsRead } from "./use-mark-all-notifications-as-read";
+import { useMarkNotificationAsRead } from "./use-mark-notification-as-read";
 import { useNotifications } from "./use-notifications";
 import { useUnreadNotificationsCount } from "./use-unread-notifications-count";
 
@@ -81,14 +81,16 @@ describe("useUnreadNotificationsCount", () => {
   });
 });
 
-describe("useMarkNotificationRead", () => {
+describe("useMarkNotificationAsRead", () => {
   it("marca como lida, invalida as listas e não dispara toast de sucesso", async () => {
     vi.mocked(notificationsService.markAsRead).mockResolvedValue(undefined);
     const notifications = mockNotificationService();
     const { wrapper, queryClient } = createQueryWrapper();
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useMarkNotificationRead(), { wrapper });
+    const { result } = renderHook(() => useMarkNotificationAsRead(), {
+      wrapper,
+    });
 
     act(() => result.current.mutate("ntf-1"));
 
@@ -107,7 +109,9 @@ describe("useMarkNotificationRead", () => {
     const notifications = mockNotificationService();
     const { wrapper } = createQueryWrapper();
 
-    const { result } = renderHook(() => useMarkNotificationRead(), { wrapper });
+    const { result } = renderHook(() => useMarkNotificationAsRead(), {
+      wrapper,
+    });
 
     act(() => result.current.mutate("ntf-1"));
 
@@ -116,7 +120,7 @@ describe("useMarkNotificationRead", () => {
   });
 });
 
-describe("useMarkAllNotificationsRead", () => {
+describe("useMarkAllNotificationsAsRead", () => {
   it("marca todas, invalida e notifica com a contagem", async () => {
     vi.mocked(notificationsService.markAllAsRead).mockResolvedValue({
       count: 3,
@@ -125,7 +129,7 @@ describe("useMarkAllNotificationsRead", () => {
     const { wrapper, queryClient } = createQueryWrapper();
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useMarkAllNotificationsRead(), {
+    const { result } = renderHook(() => useMarkAllNotificationsAsRead(), {
       wrapper,
     });
 

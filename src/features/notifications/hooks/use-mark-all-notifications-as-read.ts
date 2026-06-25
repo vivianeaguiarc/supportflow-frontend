@@ -18,7 +18,7 @@ function allReadSuccessMessage(data: unknown): string {
  * Marca todas as notificações como lidas (`PATCH /notifications/read-all`).
  * Toast de sucesso com a contagem; invalida as listas de notificações.
  */
-export function useMarkAllNotificationsRead() {
+export function useMarkAllNotificationsAsRead() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({

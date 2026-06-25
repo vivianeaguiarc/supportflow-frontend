@@ -1,14 +1,17 @@
 export {
-  NotificationBell,
   NotificationCenter,
   NotificationItem,
   NotificationList,
+  NotificationsPopover,
+  NotificationsSync,
+  UnreadNotificationsBadge,
 } from "./components";
 export {
   notificationsKeys,
-  useMarkAllNotificationsRead,
-  useMarkNotificationRead,
+  useMarkAllNotificationsAsRead,
+  useMarkNotificationAsRead,
   useNotifications,
+  useNotificationsSync,
   useUnreadNotificationsCount,
 } from "./hooks";
 export { notificationsService } from "./services";

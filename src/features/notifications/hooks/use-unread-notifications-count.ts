@@ -2,9 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 
 import { notificationsService } from "../services";
 import { notificationsKeys } from "./notifications-keys";
+import { NOTIFICATIONS_POLL_INTERVAL_MS } from "./use-notifications";
 
 const UNREAD_PARAMS = { unread: true } as const;
-const REFETCH_INTERVAL_MS = 60_000;
 
 /**
  * Total de notificações não lidas, para o badge do sino. Mantém uma query
@@ -17,7 +17,8 @@ export function useUnreadNotificationsCount() {
     queryFn: () => notificationsService.list(UNREAD_PARAMS),
     select: (data) => data.length,
     staleTime: 30_000,
-    refetchInterval: REFETCH_INTERVAL_MS,
+    refetchInterval: NOTIFICATIONS_POLL_INTERVAL_MS,
+    refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
   });
 }

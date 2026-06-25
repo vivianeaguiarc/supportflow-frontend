@@ -15,6 +15,8 @@ interface NotificationListProps {
   params?: ListNotificationsParams;
   /** Repassado a cada item (ex.: fechar o painel do sino ao navegar). */
   onSelect?: () => void;
+  /** Limita quantos itens exibir (recorte client-side, ex.: popover). */
+  maxItems?: number;
   emptyTitle?: string;
   emptyDescription?: string;
 }
@@ -23,6 +25,7 @@ interface NotificationListProps {
 export function NotificationList({
   params,
   onSelect,
+  maxItems,
   emptyTitle = "Nenhuma notificação",
   emptyDescription = "Você está em dia. Novas notificações aparecerão aqui.",
 }: NotificationListProps) {
@@ -42,7 +45,8 @@ export function NotificationList({
     );
   }
 
-  const notifications = data ?? [];
+  const all = data ?? [];
+  const notifications = maxItems !== undefined ? all.slice(0, maxItems) : all;
 
   if (notifications.length === 0) {
     return (

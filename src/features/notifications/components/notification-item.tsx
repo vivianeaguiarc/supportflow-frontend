@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
-import { useMarkNotificationRead } from "../hooks";
+import { useMarkNotificationAsRead } from "../hooks";
 import type { NotificationWithTicket } from "../types";
 import { formatRelativeTime, NOTIFICATION_TYPE_META } from "../types";
 
@@ -23,7 +23,7 @@ export function NotificationItem({
   onSelect,
 }: NotificationItemProps) {
   const router = useRouter();
-  const { mutate: markRead } = useMarkNotificationRead();
+  const { mutate: markRead } = useMarkNotificationAsRead();
 
   const meta = NOTIFICATION_TYPE_META[notification.type];
   const Icon = meta.icon;

@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { NotificationBell } from "@/features/notifications";
+import {
+  NotificationsPopover,
+  NotificationsSync,
+} from "@/features/notifications";
 
 interface AppShellProps {
   children: ReactNode;
@@ -14,7 +17,8 @@ export function AppShell({ children }: AppShellProps) {
       <AppSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex h-16 shrink-0 items-center justify-end gap-1 border-b border-border px-6">
-          <NotificationBell />
+          <NotificationsSync />
+          <NotificationsPopover />
         </header>
         <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>

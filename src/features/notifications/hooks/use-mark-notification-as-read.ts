@@ -11,7 +11,7 @@ import { notificationsKeys } from "./notifications-keys";
  * Sucesso silencioso (a UI já reflete o estado lido); apenas invalida as
  * listas de notificações para atualizar painel e contador.
  */
-export function useMarkNotificationRead() {
+export function useMarkNotificationAsRead() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({

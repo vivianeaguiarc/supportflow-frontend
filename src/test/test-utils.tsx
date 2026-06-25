@@ -54,6 +54,7 @@ export function mockApiError(
 export interface NotificationSpies {
   success: MockInstance<typeof notify.success>;
   error: MockInstance<typeof notify.error>;
+  info: MockInstance<typeof notify.info>;
   apiError: MockInstance<typeof notify.apiError>;
 }
 
@@ -66,6 +67,7 @@ export function mockNotificationService(): NotificationSpies {
   return {
     success: vi.spyOn(notify, "success").mockReturnValue("toast-id"),
     error: vi.spyOn(notify, "error").mockReturnValue("toast-id"),
+    info: vi.spyOn(notify, "info").mockReturnValue("toast-id"),
     apiError: vi.spyOn(notify, "apiError").mockReturnValue("toast-id"),
   };
 }

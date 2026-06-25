@@ -9,22 +9,21 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 import {
-  useMarkAllNotificationsRead,
+  RECENT_NOTIFICATIONS_DISPLAY_LIMIT,
+  RECENT_NOTIFICATIONS_PARAMS,
+  useMarkAllNotificationsAsRead,
   useUnreadNotificationsCount,
 } from "../hooks";
 import { NotificationList } from "./notification-list";
+import { UnreadNotificationsBadge } from "./unread-notifications-badge";
 
-/** Limite de itens exibidos no painel do sino (lista completa em /notifications). */
-const PANEL_LIMIT = 10;
-
-/** Sino de notificações com badge de não lidas e painel rápido. */
-export function NotificationBell() {
+/** Sino de notificações no header: badge de não lidas + painel rápido (popover). */
+export function NotificationsPopover() {
   const [open, setOpen] = useState(false);
   const { data: unreadCount = 0 } = useUnreadNotificationsCount();
-  const { mutate: markAllRead, isPending } = useMarkAllNotificationsRead();
+  const { mutate: markAllRead, isPending } = useMarkAllNotificationsAsRead();
 
   const hasUnread = unreadCount > 0;
-  const badgeLabel = unreadCount > 9 ? "9+" : String(unreadCount);
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
@@ -38,11 +37,10 @@ export function NotificationBell() {
         )}
       >
         <Bell className="size-5" aria-hidden />
-        {hasUnread ? (
-          <span className="absolute -top-0.5 -right-0.5 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.625rem] font-semibold leading-4 text-primary-foreground">
-            {badgeLabel}
-          </span>
-        ) : null}
+        <UnreadNotificationsBadge
+          count={unreadCount}
+          className="absolute -top-0.5 -right-0.5"
+        />
       </Popover.Trigger>
 
       <Popover.Portal>
@@ -67,7 +65,8 @@ export function NotificationBell() {
 
             <div className="max-h-[24rem] overflow-y-auto p-2">
               <NotificationList
-                params={{ limit: PANEL_LIMIT }}
+                params={RECENT_NOTIFICATIONS_PARAMS}
+                maxItems={RECENT_NOTIFICATIONS_DISPLAY_LIMIT}
                 onSelect={() => setOpen(false)}
               />
             </div>

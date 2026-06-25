@@ -34,21 +34,26 @@ export async function POST(request: Request) {
     return NextResponse.json(GENERIC_ERROR, { status: 502 });
   }
 
-  // O backend retorna TokenPairResponse "cru" ({ accessToken, refreshToken }),
-  // sem envelope e sem usuário. O usuário é obtido depois via GET /auth/me.
+  // O backend envelopa via `sendSuccess`: o corpo real é
+  // `{ success, data: { accessToken, refreshToken }, message }`. Aceitamos
+  // também o formato cru por robustez. O usuário vem depois via GET /auth/me.
   const payload = (await backendResponse.json().catch(() => null)) as
-    | (Partial<TokenPairResponse> & Record<string, unknown>)
+    | (Record<string, unknown> & {
+        data?: Partial<TokenPairResponse>;
+      } & Partial<TokenPairResponse>)
     | null;
 
-  if (!backendResponse.ok || !payload?.accessToken || !payload?.refreshToken) {
+  const tokens = payload?.data ?? payload;
+
+  if (!backendResponse.ok || !tokens?.accessToken || !tokens?.refreshToken) {
     return NextResponse.json(payload ?? GENERIC_ERROR, {
       status: backendResponse.status || 401,
     });
   }
 
   await setSessionCookies({
-    accessToken: payload.accessToken,
-    refreshToken: payload.refreshToken,
+    accessToken: tokens.accessToken,
+    refreshToken: tokens.refreshToken,
   });
 
   return NextResponse.json(

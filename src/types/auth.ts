@@ -1,7 +1,7 @@
 /**
  * Contratos de autenticação.
- * Fonte da verdade: OpenAPI do supportflow-backend
- * (`POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`).
+ * Fonte da verdade: código do supportflow-backend (módulo `auth`):
+ * `GET /auth/me`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`.
  */
 import type { UserRole } from "./user";
 
@@ -14,9 +14,12 @@ export interface LoginRequest {
 }
 
 /**
- * Resposta de `POST /auth/login` e `POST /auth/refresh` (schema
- * `TokenPairResponse`). O backend retorna os tokens "crus", SEM envelope
- * `ApiSuccessResponse` e SEM objeto `user`.
+ * Conteúdo de `data` em `POST /auth/login` e `POST /auth/refresh` (schema
+ * `TokenPairResponse`).
+ *
+ * O backend SEMPRE envelopa via `sendSuccess`, então o corpo HTTP real é
+ * `ApiSuccessResponse<TokenPairResponse>` (`{ success, data, message }`). Não há
+ * objeto `user` no login — o usuário é obtido via `GET /auth/me`.
  */
 export interface TokenPairResponse {
   accessToken: string;
@@ -42,11 +45,12 @@ export interface LogoutResponse {
 
 /**
  * Identidade do usuário autenticado, recuperada via `GET /auth/me` a partir do
- * JWT de acesso. Mesma forma do schema `User` do backend.
+ * JWT de acesso.
  *
- * PENDENTE DE CONFIRMAÇÃO: o endpoint `GET /auth/me` ainda não aparece no
- * Swagger publicado. O contrato abaixo segue o schema `User` existente; ajustar
- * caso o backend exponha campos diferentes.
+ * Fonte da verdade: mapper `toAuthUser` do backend
+ * (`modules/auth/mappers/to-auth-user.ts`), que retorna exatamente estes campos
+ * (sem `password` ou metadados de segurança), envelopados em
+ * `ApiSuccessResponse<AuthUser>`.
  */
 export interface AuthUser {
   id: string;
@@ -54,6 +58,8 @@ export interface AuthUser {
   email: string;
   role: UserRole;
   tenantId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 /** Resposta de `GET /auth/me`: o usuário autenticado. */

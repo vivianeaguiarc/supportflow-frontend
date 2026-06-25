@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 
 import type { TicketStatus } from "../types";
 
-const statusLabels: Record<TicketStatus, string> = {
+export const TICKET_STATUS_LABELS: Record<TicketStatus, string> = {
   OPEN: "Aberto",
   IN_PROGRESS: "Em andamento",
   WAITING_CUSTOMER: "Aguardando cliente",
@@ -16,5 +16,5 @@ interface TicketStatusBadgeProps {
 }
 
 export function TicketStatusBadge({ status }: TicketStatusBadgeProps) {
-  return <Badge variant="outline">{statusLabels[status]}</Badge>;
+  return <Badge variant="outline">{TICKET_STATUS_LABELS[status]}</Badge>;
 }

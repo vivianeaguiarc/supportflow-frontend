@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 
 import type { TicketPriority } from "../types";
 
-const priorityLabels: Record<TicketPriority, string> = {
+export const TICKET_PRIORITY_LABELS: Record<TicketPriority, string> = {
   LOW: "Baixa",
   MEDIUM: "Média",
   HIGH: "Alta",
@@ -26,7 +26,7 @@ interface TicketPriorityBadgeProps {
 export function TicketPriorityBadge({ priority }: TicketPriorityBadgeProps) {
   return (
     <Badge variant={priorityVariants[priority]}>
-      {priorityLabels[priority]}
+      {TICKET_PRIORITY_LABELS[priority]}
     </Badge>
   );
 }

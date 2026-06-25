@@ -40,9 +40,14 @@ export async function POST() {
     return NextResponse.json(REFRESH_ERROR, { status: 502 });
   }
 
-  const tokens = (await backendResponse
-    .json()
-    .catch(() => null)) as Partial<TokenPairResponse> | null;
+  // O backend envelopa via `sendSuccess`: corpo real é
+  // `{ success, data: { accessToken, refreshToken }, message }`. Aceitamos
+  // também o formato cru por robustez.
+  const payload = (await backendResponse.json().catch(() => null)) as
+    | ({ data?: Partial<TokenPairResponse> } & Partial<TokenPairResponse>)
+    | null;
+
+  const tokens = payload?.data ?? payload;
 
   if (!backendResponse.ok || !tokens?.accessToken || !tokens?.refreshToken) {
     await clearSessionCookies();

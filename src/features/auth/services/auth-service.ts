@@ -26,7 +26,9 @@ export const authService = {
     try {
       const response = await httpClient<ApiSuccessResponse<AuthUser>>(
         "/api/auth/me",
-        { local: true },
+        // 401 é esperado quando não há sessão (probe inicial): tratamos abaixo
+        // retornando `null`, sem poluir o console de dev com erro.
+        { local: true, expectedErrorStatuses: [401] },
       );
 
       return response.data;

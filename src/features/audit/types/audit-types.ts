@@ -2,14 +2,14 @@
  * Contratos do módulo de Auditoria (trilha imutável).
  *
  * Fonte da verdade: backend `supportflow-backend`
- * - `GET /admin/audit-logs`        → `AuditAdminService.list` (`AuditLogView`)
- * - `GET /admin/audit-logs/verify` → `AuditAdminService.verify` (`AuditChainVerification`)
- * - Schema Prisma `AuditLog` e enums `AuditAction` / `AuditEntity`.
+ * - `GET /admin/audit-logs`        → `AuditAdminService.list` (`AuditLogView` + paginação)
+ * - `GET /admin/audit-logs/verify` → `AuditAdminService.verify` (`AuditIntegrityVerificationView`)
+ * - Schema Prisma `AuditLog`, DTO `listAuditLogsQuerySchema` e enums
+ *   `AuditAction` / `AuditEntity`.
  *
- * ⚠️ O OpenAPI não publica o schema da resposta da listagem (apenas "lista
- * paginada"); estes tipos espelham a implementação real do backend. Mantemos a
- * convenção dos demais contratos em `@/features/<feature>/types`.
+ * Mantemos a convenção dos demais contratos em `@/features/<feature>/types`.
  */
+import type { ApiPaginatedResponse } from "@/types/api";
 
 /**
  * Registro imutável da trilha de auditoria (espelho de `AuditLogView`).
@@ -29,6 +29,10 @@ export interface AuditLogEntry {
   entity: string;
   /** Id do recurso afetado (ex.: id do ticket); pode ser nulo. */
   entityId: string | null;
+  /** Endereço IP de origem (extraído de `metadata` quando coletado). */
+  ip: string | null;
+  /** Correlação de request (extraído de `metadata` quando coletado). */
+  requestId: string | null;
   oldValues: unknown;
   newValues: unknown;
   metadata: unknown;
@@ -37,6 +41,18 @@ export interface AuditLogEntry {
   createdAt: string;
 }
 
+/** Campos ordenáveis aceitos pelo backend (`AUDIT_LOG_SORT_FIELDS`). */
+export const AUDIT_LOG_SORT_FIELDS = [
+  "sequence",
+  "createdAt",
+  "action",
+  "entity",
+  "userId",
+  "organizationId",
+] as const;
+
+export type AuditLogSortField = (typeof AUDIT_LOG_SORT_FIELDS)[number];
+
 /** Query params reais aceitos por `GET /admin/audit-logs`. */
 export interface ListAuditLogsParams {
   organizationId?: string;
@@ -44,26 +60,33 @@ export interface ListAuditLogsParams {
   action?: string;
   entity?: string;
   entityId?: string;
+  /** Busca textual (ação, entidade, ids, ip/requestId em metadata). */
+  search?: string;
+  /** Início do período (ISO date string). */
+  createdFrom?: string;
+  /** Fim do período (ISO date string). */
+  createdTo?: string;
+  sortBy?: AuditLogSortField;
+  sortOrder?: "asc" | "desc";
   page?: number;
   limit?: number;
 }
 
-/** Payload (já desembrulhado) de `GET /admin/audit-logs`. */
-export interface AuditLogListResult {
-  data: AuditLogEntry[];
-  total: number;
-  page: number;
-  limit: number;
-}
+/** Resposta paginada de `GET /admin/audit-logs` (envelope padrão com `meta`). */
+export type AuditLogListResult = ApiPaginatedResponse<AuditLogEntry>;
 
-export type AuditChainStatus = "VALID" | "BROKEN" | "EMPTY";
+/** Status de integridade da cadeia (campo `status` de `verify`). */
+export type AuditIntegrityStatus = "INTACT" | "EMPTY" | "COMPROMISED";
 
 /** Payload (já desembrulhado) de `GET /admin/audit-logs/verify`. */
 export interface AuditChainVerification {
-  status: AuditChainStatus;
-  valid: boolean;
-  totalVerified: number;
-  firstInvalid: unknown | null;
+  status: AuditIntegrityStatus;
+  totalLogs: number;
+  checkedAt: string;
+  firstLogId: string | null;
+  lastLogId: string | null;
+  compromisedLogId: string | null;
+  message: string;
 }
 
 /**

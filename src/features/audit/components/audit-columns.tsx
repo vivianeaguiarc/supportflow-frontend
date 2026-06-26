@@ -4,8 +4,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 
+import { DataTableColumnHeader } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
 import {
   type AuditLogEntry,
@@ -44,9 +44,11 @@ const Empty = () => <span className="text-xs text-muted-foreground">—</span>;
 export const auditColumns: ColumnDef<AuditLogEntry, any>[] = [
   {
     accessorKey: "createdAt",
-    enableSorting: false,
+    enableSorting: true,
     meta: { label: "Data/hora" },
-    header: "Data/hora",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Data/hora" />
+    ),
     cell: ({ row }) => (
       <span className="whitespace-nowrap text-muted-foreground">
         {formatDateTime(row.original.createdAt)}
@@ -55,9 +57,11 @@ export const auditColumns: ColumnDef<AuditLogEntry, any>[] = [
   },
   {
     accessorKey: "action",
-    enableSorting: false,
+    enableSorting: true,
     meta: { label: "Ação" },
-    header: "Ação",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Ação" />
+    ),
     cell: ({ row }) => (
       <Badge variant={actionVariant(row.original.action)}>
         {getAuditActionLabel(row.original.action)}
@@ -66,9 +70,11 @@ export const auditColumns: ColumnDef<AuditLogEntry, any>[] = [
   },
   {
     accessorKey: "entity",
-    enableSorting: false,
+    enableSorting: true,
     meta: { label: "Entidade" },
-    header: "Entidade",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Entidade" />
+    ),
     cell: ({ row }) => (
       <span className="text-sm">
         {getAuditEntityLabel(row.original.entity)}
@@ -101,9 +107,11 @@ export const auditColumns: ColumnDef<AuditLogEntry, any>[] = [
   },
   {
     accessorKey: "userId",
-    enableSorting: false,
+    enableSorting: true,
     meta: { label: "Usuário" },
-    header: "Usuário",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Usuário" />
+    ),
     cell: ({ row }) =>
       row.original.userId ? (
         <Mono value={row.original.userId} />
@@ -112,10 +120,38 @@ export const auditColumns: ColumnDef<AuditLogEntry, any>[] = [
       ),
   },
   {
-    accessorKey: "organizationId",
+    accessorKey: "ip",
     enableSorting: false,
+    meta: { label: "IP" },
+    header: "IP",
+    cell: ({ row }) =>
+      row.original.ip ? (
+        <span className="font-mono text-xs text-muted-foreground">
+          {row.original.ip}
+        </span>
+      ) : (
+        <Empty />
+      ),
+  },
+  {
+    accessorKey: "requestId",
+    enableSorting: false,
+    meta: { label: "Request ID" },
+    header: "Request ID",
+    cell: ({ row }) =>
+      row.original.requestId ? (
+        <Mono value={row.original.requestId} />
+      ) : (
+        <Empty />
+      ),
+  },
+  {
+    accessorKey: "organizationId",
+    enableSorting: true,
     meta: { label: "Tenant" },
-    header: "Tenant",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Tenant" />
+    ),
     cell: ({ row }) =>
       row.original.organizationId ? (
         <Mono value={row.original.organizationId} />
@@ -125,12 +161,12 @@ export const auditColumns: ColumnDef<AuditLogEntry, any>[] = [
   },
   {
     accessorKey: "sequence",
-    enableSorting: false,
+    enableSorting: true,
     meta: { label: "Sequência" },
-    header: "#",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="#" />,
     cell: ({ row }) => (
       <span
-        className={cn("font-mono text-xs text-muted-foreground")}
+        className="font-mono text-xs text-muted-foreground"
         title="Posição na cadeia imutável"
       >
         {row.original.sequence}

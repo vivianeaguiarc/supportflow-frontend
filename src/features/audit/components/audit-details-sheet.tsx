@@ -126,6 +126,32 @@ function AuditDetailsContent({ entry }: { entry: AuditLogEntry }) {
         />
       </div>
 
+      <div className="grid grid-cols-2 gap-4 rounded-lg border border-border bg-muted/30 p-3">
+        <p className="col-span-2 text-xs font-semibold text-foreground">
+          Observabilidade
+        </p>
+        <DataField
+          label="IP de origem"
+          value={
+            entry.ip ? (
+              <span className="font-mono text-sm break-all">{entry.ip}</span>
+            ) : undefined
+          }
+          fallback="Não coletado"
+        />
+        <DataField
+          label="Request ID"
+          value={
+            entry.requestId ? (
+              <span className="font-mono text-xs break-all">
+                {entry.requestId}
+              </span>
+            ) : undefined
+          }
+          fallback="Não coletado"
+        />
+      </div>
+
       <JsonBlock label="Valores anteriores" value={entry.oldValues} />
       <JsonBlock label="Novos valores" value={entry.newValues} />
       <JsonBlock label="Metadados" value={entry.metadata} />

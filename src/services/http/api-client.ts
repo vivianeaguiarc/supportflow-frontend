@@ -23,6 +23,12 @@ export interface RequestOptions extends Omit<RequestInit, "body"> {
   local?: boolean;
   /** Quando true, não tenta renovar a sessão automaticamente em caso de 401. */
   skipAuthRefresh?: boolean;
+  /**
+   * Status HTTP "esperados" para esta chamada (ex.: `[401]` no probe de sessão
+   * `GET /auth/me`). Suprime apenas o log de erro de desenvolvimento — o erro
+   * continua sendo lançado normalmente para quem chamou tratar.
+   */
+  expectedErrorStatuses?: number[];
 }
 
 function appendParams(url: string, params?: RequestOptions["params"]): string {
@@ -49,7 +55,10 @@ function resolveUrl(
   return appendParams(base, params);
 }
 
-async function parseError(response: Response): Promise<ApiError> {
+async function parseError(
+  response: Response,
+  expectedErrorStatuses?: number[],
+): Promise<ApiError> {
   let payload: unknown;
   try {
     payload = await response.json();
@@ -70,8 +79,10 @@ async function parseError(response: Response): Promise<ApiError> {
         response.status,
       );
 
-  // Em desenvolvimento, nunca escondemos erros importantes da API.
-  if (process.env.NODE_ENV !== "production") {
+  // Em desenvolvimento, logamos erros importantes da API — exceto status
+  // marcados como esperados pelo chamador (ex.: 401 do probe de sessão).
+  const isExpected = expectedErrorStatuses?.includes(response.status) ?? false;
+  if (process.env.NODE_ENV !== "production" && !isExpected) {
     console.error(`[apiClient] ${response.status} ${response.url}`, {
       code: error.code,
       message: error.message,
@@ -92,6 +103,7 @@ export async function httpClient<T>(
     params,
     local = false,
     skipAuthRefresh = false,
+    expectedErrorStatuses,
     headers,
     ...init
   } = options;
@@ -145,7 +157,7 @@ export async function httpClient<T>(
   }
 
   if (!response.ok) {
-    throw await parseError(response);
+    throw await parseError(response, expectedErrorStatuses);
   }
 
   if (response.status === 204) {

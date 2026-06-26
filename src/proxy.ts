@@ -13,11 +13,13 @@ import { AUTH_COOKIES } from "@/lib/auth/cookie-names";
  */
 const PROTECTED_PREFIXES = [
   "/dashboard",
+  "/support-desk",
   "/tickets",
   "/customers",
   "/users",
   "/notifications",
   "/audit",
+  "/settings",
 ];
 
 function isProtectedPath(pathname: string): boolean {
@@ -51,11 +53,13 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
+    "/support-desk/:path*",
     "/tickets/:path*",
     "/customers/:path*",
     "/users/:path*",
     "/notifications/:path*",
     "/audit/:path*",
+    "/settings/:path*",
     "/login",
   ],
 };

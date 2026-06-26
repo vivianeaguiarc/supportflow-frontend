@@ -38,7 +38,9 @@ export type Permission =
   | "users:list"
   | "notifications:view"
   | "audit:view"
-  | "settings:access";
+  | "settings:access"
+  | "settings:sla:view"
+  | "support-desk:access";
 
 /** Roles autorizadas por permissão (espelho do RBAC do backend). */
 export const PERMISSION_ROLES: Record<Permission, readonly UserRole[]> = {
@@ -77,6 +79,16 @@ export const PERMISSION_ROLES: Record<Permission, readonly UserRole[]> = {
   // GET /admin/audit-logs exige AUDIT_READ no backend → ADMIN e SUPERVISOR.
   "audit:view": ["ADMIN", "SUPERVISOR"],
   "settings:access": ["ADMIN"],
+  // Configuração de SLA (somente leitura): consome GET /tickets/sla (METRICS) e
+  // GET /ticket-categories (CATEGORY_LIST). Ambos liberam SUPERVISOR no backend;
+  // tratamos como área administrativa → ADMIN e SUPERVISOR (AGENT fica de fora).
+  "settings:sla:view": ["ADMIN", "SUPERVISOR"],
+  // Mesa de Atendimento (/support-desk): espaço operacional do atendente, que
+  // consome apenas endpoints reais já liberados a esses papéis — GET /tickets,
+  // /tickets/summary (TICKET_LIST) e ações de status/atribuição/comentário (cada
+  // uma com seu próprio RBAC no backend). CUSTOMER fica de fora; OMBUDSMAN entra
+  // (lê e muda status), mas métricas/comentários internos são gateados à parte.
+  "support-desk:access": ["ADMIN", "SUPERVISOR", "AGENT", "OMBUDSMAN"],
 };
 
 /** Verifica se a role possui uma permissão. Role ausente ⇒ negado. */

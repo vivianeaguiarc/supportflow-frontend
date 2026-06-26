@@ -2,11 +2,13 @@
 
 import {
   Bell,
+  Headset,
   LayoutDashboard,
   LifeBuoy,
   LogOut,
   type LucideIcon,
   ScrollText,
+  Settings,
   Ticket,
   UserCog,
   Users,
@@ -39,6 +41,12 @@ const navigation: NavItem[] = [
     permission: "dashboard:view",
   },
   {
+    name: "Mesa de Atendimento",
+    href: "/support-desk",
+    icon: Headset,
+    permission: "support-desk:access",
+  },
+  {
     name: "Chamados",
     href: "/tickets",
     icon: Ticket,
@@ -67,6 +75,12 @@ const navigation: NavItem[] = [
     href: "/audit",
     icon: ScrollText,
     permission: "audit:view",
+  },
+  {
+    name: "Configurações",
+    href: "/settings/sla",
+    icon: Settings,
+    permission: "settings:sla:view",
   },
 ];
 

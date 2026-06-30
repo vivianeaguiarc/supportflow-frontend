@@ -1,4 +1,5 @@
 export { CreateTicketForm } from "./create-ticket-form";
+export { SlaBreachedTicketsTable } from "./sla-breached-tickets-table";
 export { TicketActions } from "./ticket-actions";
 export { TicketHistory } from "./ticket-history";
 export { TicketPriorityBadge } from "./ticket-priority-badge";

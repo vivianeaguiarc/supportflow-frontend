@@ -1,5 +1,6 @@
 "use client";
 
+import { TICKET_STATUS_CHART_BAR } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import type { TicketStatus } from "@/types/ticket";
 
@@ -17,12 +18,18 @@ const STATUS_ORDER: TicketStatus[] = [
 ];
 
 const STATUS_META: Record<TicketStatus, { label: string; bar: string }> = {
-  OPEN: { label: "Abertos", bar: "bg-sky-500" },
-  IN_PROGRESS: { label: "Em andamento", bar: "bg-blue-500" },
-  WAITING_CUSTOMER: { label: "Aguardando cliente", bar: "bg-amber-500" },
-  ESCALATED: { label: "Escalados", bar: "bg-red-500" },
-  RESOLVED: { label: "Resolvidos", bar: "bg-emerald-500" },
-  CLOSED: { label: "Fechados", bar: "bg-slate-400" },
+  OPEN: { label: "Abertos", bar: TICKET_STATUS_CHART_BAR.OPEN },
+  IN_PROGRESS: {
+    label: "Em andamento",
+    bar: TICKET_STATUS_CHART_BAR.IN_PROGRESS,
+  },
+  WAITING_CUSTOMER: {
+    label: "Aguardando cliente",
+    bar: TICKET_STATUS_CHART_BAR.WAITING_CUSTOMER,
+  },
+  ESCALATED: { label: "Escalados", bar: TICKET_STATUS_CHART_BAR.ESCALATED },
+  RESOLVED: { label: "Resolvidos", bar: TICKET_STATUS_CHART_BAR.RESOLVED },
+  CLOSED: { label: "Fechados", bar: TICKET_STATUS_CHART_BAR.CLOSED },
 };
 
 export function TicketsByStatusSection() {

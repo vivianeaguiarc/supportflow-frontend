@@ -12,26 +12,25 @@ export const metadata: Metadata = {
 
 export default function SupportDeskPage() {
   return (
-    <AppShell>
-      <PageContainer>
-        <div className="space-y-6">
-          <PageHeader
-            title="Mesa de Atendimento"
-            description="Espaço operacional do atendente: filas, SLA e ações rápidas em um só lugar."
-          />
-          <Can
-            perform="support-desk:access"
-            fallback={
-              <AccessDenied
-                description="A Mesa de Atendimento é exclusiva da equipe de atendimento."
-                homeHref="/dashboard"
-                homeLabel="Voltar para o dashboard"
-              />
-            }
-          >
-            <SupportDeskView />
-          </Can>
-        </div>
+    <AppShell variant="operational">
+      <PageContainer size="wide" density="compact">
+        <PageHeader
+          variant="operational"
+          title="Mesa de Atendimento"
+          description="Espaço operacional do atendente: filas, SLA e ações rápidas em um só lugar."
+        />
+        <Can
+          perform="support-desk:access"
+          fallback={
+            <AccessDenied
+              description="A Mesa de Atendimento é exclusiva da equipe de atendimento."
+              homeHref="/dashboard"
+              homeLabel="Voltar para o dashboard"
+            />
+          }
+        >
+          <SupportDeskView />
+        </Can>
       </PageContainer>
     </AppShell>
   );

@@ -6,13 +6,13 @@ import { PageContainer } from "@/components/ui/page-container";
 import { DashboardView } from "@/features/dashboard/components";
 
 export const metadata: Metadata = {
-  title: "Dashboard",
+  title: "Central de Atendimento",
 };
 
 export default function DashboardPage() {
   return (
-    <AppShell>
-      <PageContainer>
+    <AppShell variant="operational">
+      <PageContainer size="wide" density="comfortable">
         <Can
           perform="dashboard:view"
           fallback={

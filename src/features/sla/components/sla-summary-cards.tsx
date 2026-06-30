@@ -39,14 +39,14 @@ export function SlaSummaryCards() {
       <CardStat
         label="Chamados ativos"
         value={data.total}
-        accent="blue"
+        accent="primary"
         icon={<Clock />}
         description="Total considerado no cálculo de SLA"
       />
       <CardStat
         label="No prazo"
         value={data.onTime}
-        accent="emerald"
+        accent="success"
         icon={<CircleCheck />}
         progress={compliancePercent(data.onTime, data.total)}
         description={`${compliancePercent(data.onTime, data.total)}% de aderência`}
@@ -54,14 +54,14 @@ export function SlaSummaryCards() {
       <CardStat
         label="Em alerta"
         value={data.warning}
-        accent="amber"
+        accent="warning"
         icon={<TriangleAlert />}
         description="Próximos do vencimento"
       />
       <CardStat
         label="Violado"
         value={data.breached}
-        accent="red"
+        accent="danger"
         icon={<CircleSlash />}
         description="SLA já ultrapassado"
       />

@@ -1,27 +1,45 @@
+"use client";
+
 import type { ReactNode } from "react";
 
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import {
-  NotificationsPopover,
-  NotificationsSync,
-} from "@/features/notifications";
+import { LAYOUT_MAIN_CLASSES, type LayoutVariant } from "@/lib/theme";
+import { cn } from "@/lib/utils";
+
+import { AppHeader } from "./app-header";
+import { AppSidebar } from "./app-sidebar";
+import { MobileSidebar } from "./mobile-sidebar";
+import { ShellProvider } from "./shell-context";
 
 interface AppShellProps {
   children: ReactNode;
+  /**
+   * Variante de layout:
+   * - `standard` — páginas gerais (dashboard, tickets, clientes)
+   * - `operational` — mesa de atendimento (densidade compacta)
+   * - `admin` — configurações e áreas administrativas
+   */
+  variant?: LayoutVariant;
 }
 
-/** Casca da aplicação: sidebar fixa + topbar + área de conteúdo rolável. */
-export function AppShell({ children }: AppShellProps) {
+/** Casca da aplicação: sidebar + header contextual + área de conteúdo. */
+export function AppShell({ children, variant = "standard" }: AppShellProps) {
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <AppSidebar />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-16 shrink-0 items-center justify-end gap-1 border-b border-border px-6">
-          <NotificationsSync />
-          <NotificationsPopover />
-        </header>
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+    <ShellProvider>
+      <div className="flex h-screen overflow-hidden bg-background">
+        <AppSidebar />
+        <MobileSidebar />
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <AppHeader variant={variant} />
+          <main
+            className={cn(
+              "flex-1 overflow-y-auto",
+              LAYOUT_MAIN_CLASSES[variant],
+            )}
+          >
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </ShellProvider>
   );
 }

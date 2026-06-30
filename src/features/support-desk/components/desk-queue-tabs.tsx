@@ -1,21 +1,31 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
-import { DESK_QUEUES, type DeskQueueId } from "../lib/desk-queues";
+export interface DeskTabDef {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  description: string;
+}
 
 interface DeskQueueTabsProps {
-  active: DeskQueueId;
-  onChange: (queue: DeskQueueId) => void;
-  /** Contagens conhecidas via `GET /tickets/summary` (open/unassigned/overdue). */
-  counts?: Partial<Record<DeskQueueId, number>>;
+  /** Abas a exibir (filas operacionais + abas especiais, ex.: "SLA violado"). */
+  tabs: readonly DeskTabDef[];
+  active: string;
+  onChange: (id: string) => void;
+  /** Contagens conhecidas (ex.: via `GET /tickets/summary`). */
+  counts?: Record<string, number | undefined>;
 }
 
 /**
- * Seletor segmentado das filas operacionais. Visual mais "denso" que abas de
+ * Seletor segmentado das abas operacionais. Visual mais "denso" que abas de
  * navegação para reforçar o caráter de mesa de trabalho.
  */
 export function DeskQueueTabs({
+  tabs,
   active,
   onChange,
   counts,
@@ -26,19 +36,19 @@ export function DeskQueueTabs({
       aria-label="Filas de atendimento"
       className="flex flex-wrap gap-1.5"
     >
-      {DESK_QUEUES.map((queue) => {
-        const isActive = queue.id === active;
-        const count = counts?.[queue.id];
-        const Icon = queue.icon;
+      {tabs.map((tab) => {
+        const isActive = tab.id === active;
+        const count = counts?.[tab.id];
+        const Icon = tab.icon;
 
         return (
           <button
-            key={queue.id}
+            key={tab.id}
             type="button"
             role="tab"
             aria-selected={isActive}
-            onClick={() => onChange(queue.id)}
-            title={queue.description}
+            onClick={() => onChange(tab.id)}
+            title={tab.description}
             className={cn(
               "inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
               isActive
@@ -47,7 +57,7 @@ export function DeskQueueTabs({
             )}
           >
             <Icon className="size-4 shrink-0" aria-hidden />
-            {queue.label}
+            {tab.label}
             {typeof count === "number" ? (
               <span
                 className={cn(

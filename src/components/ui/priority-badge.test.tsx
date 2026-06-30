@@ -10,10 +10,10 @@ describe("PriorityBadge", () => {
     expect(screen.getByText("Baixa")).toBeInTheDocument();
   });
 
-  it("mapeia urgente para o tom de perigo (rose)", () => {
+  it("mapeia urgente para o tom de perigo", () => {
     render(<PriorityBadge level="urgent" />);
 
-    expect(screen.getByText("Urgente").className).toContain("rose");
+    expect(screen.getByText("Urgente").className).toContain("tone-danger");
   });
 
   it("permite sobrescrever o rótulo", () => {

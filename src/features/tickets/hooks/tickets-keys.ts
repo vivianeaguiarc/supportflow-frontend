@@ -1,4 +1,8 @@
-import type { ListTicketsParams, TicketSummaryParams } from "@/types/ticket";
+import type {
+  ListBreachedSlaTicketsParams,
+  ListTicketsParams,
+  TicketSummaryParams,
+} from "@/types/ticket";
 
 /**
  * Query keys centralizadas da feature de tickets.
@@ -19,6 +23,8 @@ export const ticketsKeys = {
     return params ? ([...base, params] as const) : base;
   },
   metrics: () => [...ticketsKeys.all, "metrics"] as const,
+  slaBreached: (params: ListBreachedSlaTicketsParams) =>
+    [...ticketsKeys.all, "sla", "breached", params] as const,
   customers: () => [...ticketsKeys.all, "customers"] as const,
   categories: () => [...ticketsKeys.all, "categories"] as const,
 };

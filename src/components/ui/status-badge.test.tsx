@@ -13,7 +13,7 @@ describe("StatusBadge", () => {
   it("aplica as classes do tom semântico", () => {
     render(<StatusBadge label="Resolvido" tone="success" />);
 
-    expect(screen.getByText("Resolvido").className).toContain("emerald");
+    expect(screen.getByText("Resolvido").className).toContain("tone-success");
   });
 
   it("mescla a className recebida", () => {

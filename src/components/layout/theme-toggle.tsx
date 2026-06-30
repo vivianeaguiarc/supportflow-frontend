@@ -23,11 +23,8 @@ function useHydrated() {
   );
 }
 
-/**
- * Alternador de tema (claro / sistema / escuro). Evita flash de hidratação
- * aguardando a hidratação antes de refletir o tema ativo.
- */
-export function ThemeToggle() {
+/** Alternador de tema (claro / sistema / escuro). */
+export function ThemeToggle({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme();
   const hydrated = useHydrated();
 
@@ -37,7 +34,10 @@ export function ThemeToggle() {
     <div
       role="radiogroup"
       aria-label="Tema da interface"
-      className="flex items-center gap-1 rounded-lg border border-sidebar-border bg-sidebar p-1"
+      className={cn(
+        "flex items-center gap-1 rounded-lg border border-sidebar-border bg-sidebar p-1",
+        className,
+      )}
     >
       {OPTIONS.map((option) => {
         const isActive = active === option.value;

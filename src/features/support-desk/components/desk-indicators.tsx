@@ -37,7 +37,7 @@ function SlaComplianceCard() {
       label="Conformidade de SLA"
       value={`${rate}%`}
       icon={<ShieldCheck />}
-      accent={rate >= 90 ? "emerald" : rate >= 70 ? "amber" : "red"}
+      accent={rate >= 90 ? "success" : rate >= 70 ? "warning" : "danger"}
       progress={rate}
       description={`${data.resolvedTickets} resolvidos · ${data.avgResolutionTimeHours.toFixed(1)}h em média`}
     />
@@ -68,21 +68,21 @@ export function DeskIndicators() {
         label="Em aberto"
         value={data.open}
         icon={<Inbox />}
-        accent="blue"
+        accent="primary"
         description={`${active} chamados ativos no total`}
       />
       <CardStat
         label="Sem responsável"
         value={data.unassigned}
         icon={<UserX />}
-        accent={data.unassigned > 0 ? "amber" : "neutral"}
+        accent={data.unassigned > 0 ? "warning" : "neutral"}
         description="Aguardando atribuição"
       />
       <CardStat
         label="Atrasados"
         value={data.overdue}
         icon={<AlarmClock />}
-        accent={data.overdue > 0 ? "red" : "emerald"}
+        accent={data.overdue > 0 ? "danger" : "success"}
         description="SLA estourado"
       />
       <Can perform="metrics:view">

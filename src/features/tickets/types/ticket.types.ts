@@ -5,7 +5,9 @@
 export type {
   AgentPerformance,
   AssignTicketRequest,
+  BreachedSlaTicket,
   CreateTicketRequest,
+  ListBreachedSlaTicketsParams,
   ListTicketsParams,
   Ticket,
   TicketHistory,

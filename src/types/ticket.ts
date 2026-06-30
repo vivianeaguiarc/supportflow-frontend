@@ -48,6 +48,25 @@ export interface TicketSummary {
   byPriority: Record<TicketPriority, number>;
 }
 
+/**
+ * Item de `GET /tickets/sla/breached` (schema `BreachedSlaTicket`): um `Ticket`
+ * com SLA já violado, acrescido do status fixo `BREACHED` e das horas de atraso
+ * calculadas pelo backend.
+ */
+export interface BreachedSlaTicket extends Ticket {
+  slaStatus: "BREACHED";
+  hoursOverdue: number;
+}
+
+/**
+ * Query params de `GET /tickets/sla/breached`. O endpoint real aceita apenas
+ * paginação — não há filtros nem ordenação no contrato.
+ */
+export interface ListBreachedSlaTicketsParams {
+  page?: number;
+  limit?: number;
+}
+
 /** Performance individual de agente (item de `TicketMetrics`). */
 export interface AgentPerformance {
   agentId: string;

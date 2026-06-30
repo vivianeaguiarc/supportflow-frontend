@@ -1,27 +1,11 @@
 import type { ReactNode } from "react";
 
+import { STAT_ACCENT_CLASSES, type StatAccent } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 import { Card, CardContent } from "./card";
 
-export type StatAccent =
-  | "violet"
-  | "emerald"
-  | "amber"
-  | "blue"
-  | "red"
-  | "neutral";
-
-const ACCENT_CHIP: Record<StatAccent, string> = {
-  violet:
-    "bg-violet-100 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300",
-  emerald:
-    "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300",
-  amber: "bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300",
-  blue: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300",
-  red: "bg-red-100 text-red-600 dark:bg-red-500/15 dark:text-red-300",
-  neutral: "bg-muted text-muted-foreground",
-};
+export type { StatAccent };
 
 interface CardStatProps {
   label: string;
@@ -50,7 +34,7 @@ export function CardStat({
   return (
     <Card
       className={cn(
-        "transition-shadow hover:shadow-md hover:shadow-foreground/5",
+        "transition-shadow hover:shadow-[var(--shadow-card-hover)]",
         className,
       )}
     >
@@ -60,7 +44,7 @@ export function CardStat({
             <div
               className={cn(
                 "flex size-9 items-center justify-center rounded-lg [&_svg]:size-4.5",
-                ACCENT_CHIP[accent],
+                STAT_ACCENT_CLASSES[accent],
               )}
             >
               {icon}

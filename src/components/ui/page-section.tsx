@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { SECTION_STACK_CLASSES } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 interface PageSectionProps {
@@ -7,6 +8,8 @@ interface PageSectionProps {
   description?: ReactNode;
   actions?: ReactNode;
   children: ReactNode;
+  /** Densidade interna da seção (compacta na mesa operacional). */
+  density?: "compact" | "comfortable";
   className?: string;
 }
 
@@ -16,12 +19,13 @@ export function PageSection({
   description,
   actions,
   children,
+  density = "comfortable",
   className,
 }: PageSectionProps) {
   const hasHeader = Boolean(title || description || actions);
 
   return (
-    <section className={cn("space-y-4", className)}>
+    <section className={cn(SECTION_STACK_CLASSES[density], className)}>
       {hasHeader ? (
         <div className="flex items-start justify-between gap-2">
           <div className="space-y-1">

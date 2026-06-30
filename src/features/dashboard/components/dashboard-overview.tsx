@@ -36,25 +36,25 @@ export function OverviewSection() {
         label="Total de chamados"
         value={formatNumber(data.totalTickets)}
         icon={<Layers />}
-        accent="blue"
+        accent="primary"
       />
       <CardStat
         label="Abertos"
         value={formatNumber(data.openTickets)}
         icon={<FileText />}
-        accent="emerald"
+        accent="success"
       />
       <CardStat
         label="Em andamento"
         value={formatNumber(data.inProgressTickets)}
         icon={<Clock />}
-        accent="amber"
+        accent="warning"
       />
       <CardStat
         label="Resolvidos"
         value={formatNumber(data.resolvedTickets)}
         icon={<CheckCircle2 />}
-        accent="blue"
+        accent="info"
       />
       <CardStat
         label="Fechados"

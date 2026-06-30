@@ -1,0 +1,86 @@
+/**
+ * SupportFlow — Utilitários semânticos baseados em tokens.
+ * Usados por badges, chips de SLA, callouts e indicadores.
+ */
+
+@layer utilities {
+  .tone-neutral {
+    @apply border-border bg-transparent text-foreground;
+  }
+
+  .tone-muted {
+    @apply border-transparent bg-muted text-muted-foreground;
+  }
+
+  .tone-info {
+    @apply border-info/25 bg-info/10 text-info dark:border-info/30 dark:bg-info/15;
+  }
+
+  .tone-success {
+    @apply border-success/25 bg-success/10 text-success dark:border-success/30 dark:bg-success/15;
+  }
+
+  .tone-warning {
+    @apply border-warning/30 bg-warning/10 text-warning dark:border-warning/30 dark:bg-warning/15;
+  }
+
+  .tone-danger {
+    @apply border-destructive/25 bg-destructive/10 text-destructive dark:border-destructive/30 dark:bg-destructive/15;
+  }
+
+  .tone-primary {
+    @apply border-primary/25 bg-primary/10 text-primary dark:border-primary/30 dark:bg-primary/15;
+  }
+
+  .tone-accent {
+    @apply border-accent-foreground/20 bg-accent text-accent-foreground;
+  }
+
+  .callout-warning {
+    @apply flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 p-3 text-xs text-warning-foreground;
+  }
+
+  .stat-chip-primary {
+    @apply bg-primary/10 text-primary dark:bg-primary/15;
+  }
+
+  .stat-chip-accent {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .stat-chip-success {
+    @apply bg-success/10 text-success dark:bg-success/15;
+  }
+
+  .stat-chip-warning {
+    @apply bg-warning/10 text-warning dark:bg-warning/15;
+  }
+
+  .stat-chip-danger {
+    @apply bg-destructive/10 text-destructive dark:bg-destructive/15;
+  }
+
+  .stat-chip-info {
+    @apply bg-info/10 text-info dark:bg-info/15;
+  }
+
+  .stat-chip-neutral {
+    @apply bg-muted text-muted-foreground;
+  }
+
+  .sla-chip-breached {
+    @apply inline-flex items-center gap-1 rounded-full border border-destructive/25 bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive ring-1 ring-destructive/30 ring-inset dark:border-destructive/30 dark:bg-destructive/15;
+  }
+
+  .sla-chip-warning {
+    @apply inline-flex items-center gap-1 rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-xs font-medium text-warning ring-1 ring-warning/30 ring-inset dark:bg-warning/15;
+  }
+
+  .sla-chip-ok {
+    @apply inline-flex items-center gap-1 rounded-full border border-success/25 bg-success/10 px-2 py-0.5 text-xs font-medium text-success ring-1 ring-success/30 ring-inset dark:border-success/30 dark:bg-success/15;
+  }
+
+  .sla-chip-none {
+    @apply inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted-foreground ring-1 ring-inset;
+  }
+}

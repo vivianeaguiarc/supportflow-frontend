@@ -1,64 +1,88 @@
 "use client";
 
+import { TimerOff } from "lucide-react";
 import { useState } from "react";
 
 import { PageSection } from "@/components/ui/page-section";
+import { SlaBreachedTicketsTable } from "@/features/tickets/components";
 import { useTicketSummary } from "@/features/tickets/hooks";
 import { useAuth } from "@/hooks/use-auth";
+import { usePermissions } from "@/hooks/use-permissions";
 import type { Ticket } from "@/types/ticket";
 
-import { useDeskQueue } from "../hooks";
 import { DESK_QUEUES, type DeskQueueId } from "../lib/desk-queues";
+import { DeskCardQueue } from "./desk-card-queue";
 import { DeskDetailSheet } from "./desk-detail-sheet";
 import { DeskIndicators } from "./desk-indicators";
-import { DeskQueueList } from "./desk-queue-list";
-import { DeskQueueTabs } from "./desk-queue-tabs";
+import { DeskQueueTabs, type DeskTabDef } from "./desk-queue-tabs";
+
+/** Aba especial que consome o endpoint dedicado `GET /tickets/sla/breached`. */
+const BREACHED_TAB: DeskTabDef = {
+  id: "breached",
+  label: "SLA violado",
+  icon: TimerOff,
+  description: "Chamados ativos que já ultrapassaram o prazo de SLA.",
+};
 
 /**
  * Mesa de Atendimento: visão operacional do atendente. Compõe os indicadores,
  * o seletor de filas, a lista compacta de chamados e o painel lateral de
  * detalhe rápido. Tudo apoiado em endpoints reais (`GET /tickets`,
- * `/tickets/summary`, `/tickets/metrics` e `/tickets/{id}/comments`).
+ * `/tickets/summary`, `/tickets/metrics`, `/tickets/sla/breached` e
+ * `/tickets/{id}/comments`).
  */
 export function SupportDeskView() {
   const { user } = useAuth();
-  const [activeQueue, setActiveQueue] = useState<DeskQueueId>("open");
+  const { can } = usePermissions();
+  const [activeTab, setActiveTab] = useState<string>("open");
   const [selected, setSelected] = useState<Ticket | null>(null);
 
   const summary = useTicketSummary();
-  const queue = useDeskQueue(activeQueue, user?.id);
 
-  const counts: Partial<Record<DeskQueueId, number>> = {
+  // A aba "SLA violado" consome `GET /tickets/sla/breached`, restrito ao grupo
+  // METRICS no backend (ADMIN/SUPERVISOR/AGENT — sem OMBUDSMAN). Só exibimos a
+  // aba a quem tem a permissão real, evitando um 403 garantido.
+  const canSeeBreached = can("metrics:view");
+  const tabs: DeskTabDef[] = canSeeBreached
+    ? [...DESK_QUEUES, BREACHED_TAB]
+    : [...DESK_QUEUES];
+
+  const counts: Record<string, number | undefined> = {
     open: summary.data?.open,
     unassigned: summary.data?.unassigned,
     overdue: summary.data?.overdue,
+    breached: summary.data?.overdue,
   };
 
-  const activeDef = DESK_QUEUES.find((q) => q.id === activeQueue);
+  const isBreachedActive = activeTab === "breached" && canSeeBreached;
+  const activeDef = tabs.find((tab) => tab.id === activeTab);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <DeskIndicators />
 
       <PageSection
         title="Filas operacionais"
         description={activeDef?.description}
+        density="compact"
       >
         <DeskQueueTabs
-          active={activeQueue}
-          onChange={setActiveQueue}
+          tabs={tabs}
+          active={activeTab}
+          onChange={setActiveTab}
           counts={counts}
         />
 
-        <DeskQueueList
-          tickets={queue.tickets}
-          isLoading={queue.isLoading}
-          isError={queue.isError}
-          error={queue.error}
-          onRetry={() => queue.refetch()}
-          selectedId={selected?.id ?? null}
-          onSelect={setSelected}
-        />
+        {isBreachedActive ? (
+          <SlaBreachedTicketsTable onOpenTicket={setSelected} />
+        ) : (
+          <DeskCardQueue
+            queueId={activeTab as DeskQueueId}
+            currentUserId={user?.id}
+            selectedId={selected?.id ?? null}
+            onSelect={setSelected}
+          />
+        )}
       </PageSection>
 
       <DeskDetailSheet

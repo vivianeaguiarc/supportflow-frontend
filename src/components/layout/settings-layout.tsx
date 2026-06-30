@@ -30,9 +30,8 @@ const SETTINGS_NAV: SettingsNavItem[] = [
 ];
 
 /**
- * Layout das páginas de Configurações: casca da aplicação + cabeçalho + uma
- * navegação secundária (abas) entre as seções administrativas. As abas
- * respeitam o RBAC visual (cada uma exige sua permissão).
+ * Layout das páginas de Configurações: variante admin (densidade espaçosa,
+ * topbar e cabeçalho diferenciados) + navegação secundária entre seções.
  */
 export function SettingsLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -40,43 +39,41 @@ export function SettingsLayout({ children }: { children: ReactNode }) {
   const visibleNav = SETTINGS_NAV.filter((item) => can(item.permission));
 
   return (
-    <AppShell>
-      <PageContainer>
-        <div className="space-y-6">
-          <PageHeader
-            title="Configurações"
-            description="Administração e parâmetros de negócio do SupportFlow."
-          />
+    <AppShell variant="admin">
+      <PageContainer density="spacious">
+        <PageHeader
+          variant="admin"
+          title="Configurações"
+          description="Administração e parâmetros de negócio do SupportFlow."
+        />
 
-          {visibleNav.length > 0 ? (
-            <nav className="flex flex-wrap gap-1 border-b border-border">
-              {visibleNav.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  pathname.startsWith(`${item.href}/`);
+        {visibleNav.length > 0 ? (
+          <nav className="flex flex-wrap gap-1 border-b border-border">
+            {visibleNav.map((item) => {
+              const isActive =
+                pathname === item.href || pathname.startsWith(`${item.href}/`);
 
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={isActive ? "page" : undefined}
-                    className={cn(
-                      "-mb-px flex items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium transition-colors",
-                      isActive
-                        ? "border-primary text-foreground"
-                        : "border-transparent text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    <item.icon className="size-4" />
-                    {item.name}
-                  </Link>
-                );
-              })}
-            </nav>
-          ) : null}
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "-mb-px flex items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+                    isActive
+                      ? "border-primary text-foreground"
+                      : "border-transparent text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  <item.icon className="size-4" />
+                  {item.name}
+                </Link>
+              );
+            })}
+          </nav>
+        ) : null}
 
-          {children}
-        </div>
+        {children}
       </PageContainer>
     </AppShell>
   );

@@ -1,0 +1,9 @@
+/**
+ * SupportFlow — Design Tokens: Border Radius
+ *
+ * Cantos moderadamente arredondados — acolhedores sem parecer consumer/mobile.
+ */
+
+:root {
+  --radius: 0.625rem;
+}

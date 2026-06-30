@@ -56,6 +56,7 @@ export function DeskQueueList({
         icon={Inbox}
         title="Nenhum chamado nesta fila"
         description="Quando houver chamados que atendam a este filtro, eles aparecerão aqui."
+        tone="primary"
       />
     );
   }

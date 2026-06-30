@@ -46,7 +46,7 @@ export function DeskTicketCard({
       <div className="mt-1.5 flex items-center gap-2 text-xs text-muted-foreground">
         <span className="font-mono">{ticket.protocol}</span>
         {!ticket.assignedToId ? (
-          <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
+          <span className="inline-flex items-center gap-1 text-warning">
             <UserX className="size-3" aria-hidden />
             Sem responsável
           </span>

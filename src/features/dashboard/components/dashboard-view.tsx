@@ -1,82 +1,89 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { RefreshCw } from "lucide-react";
+import { Headset, RefreshCw } from "lucide-react";
+import Link from "next/link";
 
 import { Can } from "@/components/auth";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { useAuth } from "@/features/auth/hooks";
+import { ticketsKeys } from "@/features/tickets/hooks";
 import { MESSAGES, notify } from "@/lib/notifications";
+import { cn } from "@/lib/utils";
 
 import { dashboardKeys } from "../hooks";
-import { AgentsPerformanceSection } from "./agents-performance-section";
+import { CriticalQueueSection } from "./critical-queue-section";
 import { CsatSection } from "./csat-section";
-import { OverviewSection } from "./dashboard-overview";
-import { RecentTicketsSection } from "./recent-tickets-section";
-import { SlaGaugeSection } from "./sla-gauge-section";
-import { TicketsByPrioritySection } from "./tickets-by-priority-section";
-import { TicketsByStatusSection } from "./tickets-by-status-section";
-import { TicketsTrendSection } from "./tickets-trend-section";
-import { TopAgentsSection } from "./top-agents-section";
+import { DashboardKpis } from "./dashboard-kpis";
+import { MyTicketsSection } from "./my-tickets-section";
+import { RecentActivitySection } from "./recent-activity-section";
+import { SlaAtRiskSection } from "./sla-at-risk-section";
+import { TeamPerformanceSection } from "./team-performance-section";
 
 /**
- * Orquestra as seções de analytics do dashboard.
- *
- * RBAC (espelho do backend):
- * - `analytics:view` (ADMIN, SUPERVISOR): overview, status, prioridade, SLA,
- *   performance por agente.
- * - `analytics:csat` (ADMIN, SUPERVISOR, AGENT): CSAT.
- * Roles sem essas permissões simplesmente não veem as respectivas seções, sem
- * disparar requisições (os componentes só montam dentro de `<Can>`).
+ * Central de Atendimento — dashboard operacional focado em filas, SLA e
+ * performance da equipe. RBAC:
+ * - `analytics:view` (ADMIN/SUPERVISOR): visão geral da equipe.
+ * - AGENT: foco em chamados atribuídos e filas disponíveis.
+ * - `analytics:csat`: satisfação quando disponível no contrato.
  */
 export function DashboardView() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
   function handleRefreshAll() {
-    void queryClient
-      .invalidateQueries({ queryKey: dashboardKeys.all })
-      .then(() => notify.success(MESSAGES.dashboard.refreshed));
+    void Promise.all([
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all }),
+      queryClient.invalidateQueries({ queryKey: ticketsKeys.all }),
+    ]).then(() => notify.success(MESSAGES.dashboard.refreshed));
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="font-heading text-2xl font-semibold text-foreground">
-            Olá, {user?.name ?? "bem-vindo"}! 👋
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Aqui está o resumo do atendimento da sua organização.
-          </p>
-        </div>
-        <Button size="sm" onClick={handleRefreshAll}>
-          <RefreshCw className="size-4" />
-          Atualizar dados
-        </Button>
+    <>
+      <PageHeader
+        variant="operational"
+        title="Central de Atendimento"
+        description={
+          <>
+            Olá, <strong>{user?.name ?? "bem-vindo"}</strong> — monitore filas,
+            prazos de SLA e a performance da operação em tempo real.
+          </>
+        }
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/support-desk"
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+            >
+              <Headset className="size-4" aria-hidden />
+              Mesa de Atendimento
+            </Link>
+            <Button size="sm" onClick={handleRefreshAll}>
+              <RefreshCw className="size-4" aria-hidden />
+              Atualizar
+            </Button>
+          </div>
+        }
+      />
+
+      <DashboardKpis />
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <CriticalQueueSection />
+        <MyTicketsSection />
       </div>
 
+      <SlaAtRiskSection />
+      <RecentActivitySection />
+
       <Can perform="analytics:view">
-        <OverviewSection />
-
-        <div className="grid gap-6 lg:grid-cols-3">
-          <TicketsTrendSection />
-          <TicketsByPrioritySection />
-          <SlaGaugeSection />
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-3">
-          <TicketsByStatusSection />
-          <RecentTicketsSection />
-          <TopAgentsSection />
-        </div>
-
-        <AgentsPerformanceSection />
+        <TeamPerformanceSection />
       </Can>
 
       <Can perform="analytics:csat">
         <CsatSection />
       </Can>
-    </div>
+    </>
   );
 }

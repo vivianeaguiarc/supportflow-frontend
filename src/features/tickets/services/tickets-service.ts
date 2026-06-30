@@ -3,10 +3,12 @@ import type { ApiPaginatedResponse } from "@/types/api";
 import { unwrap } from "@/types/api";
 import type {
   AssignTicketRequest,
+  BreachedSlaTicket,
   BulkAssignTicketsRequest,
   BulkTicketOperationResult,
   BulkUpdateTicketStatusRequest,
   CreateTicketRequest,
+  ListBreachedSlaTicketsParams,
   ListTicketsParams,
   Ticket,
   TicketHistory,
@@ -169,6 +171,19 @@ export const ticketsService = {
       local: true,
     });
     return unwrap<TicketMetrics>(response);
+  },
+
+  /**
+   * `GET /tickets/sla/breached` — chamados ativos com SLA violado (resposta
+   * paginada com envelope + meta). O contrato real aceita apenas `page`/`limit`.
+   */
+  listBreachedSla(
+    params: ListBreachedSlaTicketsParams = {},
+  ): Promise<ApiPaginatedResponse<BreachedSlaTicket>> {
+    return httpClient<ApiPaginatedResponse<BreachedSlaTicket>>(
+      "/api/tickets/sla/breached",
+      { local: true, params: { page: params.page, limit: params.limit } },
+    );
   },
 };
 

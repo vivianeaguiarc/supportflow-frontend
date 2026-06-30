@@ -7,6 +7,7 @@ export {
 export { useCategoryOptions } from "./use-category-options";
 export { useCreateTicket } from "./use-create-ticket";
 export { useCustomerOptions } from "./use-customer-options";
+export { useSlaBreachedTickets } from "./use-sla-breached-tickets";
 export { useTicket } from "./use-ticket";
 export { useTicketHistory } from "./use-ticket-history";
 export { useTicketMetrics } from "./use-ticket-metrics";

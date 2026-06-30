@@ -40,7 +40,7 @@ export function SlaSettingsView() {
       </PageSection>
 
       <PageSection title="Limitações do backend">
-        <div className="flex items-start gap-2 rounded-lg border border-amber-300/60 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+        <div className="callout-warning">
           <TriangleAlert className="mt-0.5 size-4 shrink-0" />
           <div className="space-y-1">
             <p className="font-medium">

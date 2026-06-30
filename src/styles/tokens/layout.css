@@ -1,0 +1,139 @@
+/**
+ * SupportFlow — Layout shell (sidebar, header, densidade).
+ * Atualizado na refatoração do application shell.
+ */
+
+:root {
+  --layout-sidebar-width: 16rem;
+  --layout-header-height: 3.75rem;
+  --layout-nav-group-gap: 0.25rem;
+}
+
+@layer utilities {
+  /* —— Shell (main padding por variante) —— */
+  .layout-main-standard {
+    @apply p-4 sm:p-6;
+  }
+
+  .layout-main-operational {
+    @apply p-4 md:p-5;
+  }
+
+  .layout-main-admin {
+    @apply p-4 sm:p-6 md:p-8;
+  }
+
+  /* —— Header —— */
+  .layout-header {
+    @apply flex h-[var(--layout-header-height)] shrink-0 items-center gap-3 border-b border-border bg-surface/90 px-3 backdrop-blur-md sm:gap-4 sm:px-6;
+  }
+
+  .layout-header-operational {
+    @apply border-primary/15 bg-primary/[0.03];
+  }
+
+  .layout-header-admin {
+    @apply border-border bg-muted/30;
+  }
+
+  /* —— Sidebar —— */
+  .layout-sidebar {
+    @apply hidden h-full w-[var(--layout-sidebar-width)] shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex;
+  }
+
+  .layout-sidebar-inner {
+    @apply flex h-full w-[var(--layout-sidebar-width)] flex-col bg-sidebar;
+  }
+
+  .layout-sidebar-brand {
+    @apply flex h-[var(--layout-header-height)] items-center gap-3 border-b border-sidebar-border px-4;
+  }
+
+  .layout-sidebar-brand-mark {
+    @apply flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[var(--shadow-xs)] ring-1 ring-primary/20;
+  }
+
+  .nav-group-label {
+    @apply px-3 pt-4 pb-1.5 text-[0.65rem] font-semibold tracking-[var(--tracking-wide)] text-muted-foreground uppercase;
+  }
+
+  .nav-group-label:first-child {
+    @apply pt-2;
+  }
+
+  .nav-item {
+    @apply relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-[color,background,box-shadow] outline-none focus-visible:ring-3 focus-visible:ring-ring/50;
+  }
+
+  .nav-item-active {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground shadow-[var(--shadow-xs)] before:absolute before:top-1.5 before:bottom-1.5 before:left-0 before:w-1 before:rounded-full before:bg-primary before:content-[''];
+  }
+
+  .nav-item-inactive {
+    @apply text-sidebar-foreground/85 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground;
+  }
+
+  .nav-item-icon-wrap {
+    @apply flex size-8 shrink-0 items-center justify-center rounded-md bg-transparent transition-colors;
+  }
+
+  .nav-item-icon-wrap-active {
+    @apply bg-primary/10 text-primary;
+  }
+
+  .nav-item-icon-wrap-inactive {
+    @apply text-muted-foreground group-hover:text-sidebar-foreground;
+  }
+
+  /* —— Busca global (visual) —— */
+  .global-search-input {
+    @apply h-9 w-full rounded-lg border border-input bg-muted/40 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-70;
+  }
+
+  /* —— Cabeçalhos de página —— */
+  .page-header-operational {
+    @apply border-l-4 border-primary pl-4;
+  }
+
+  .page-header-admin {
+    @apply border-b border-border pb-4;
+  }
+
+  /* —— Densidade de seções —— */
+  .page-stack-compact {
+    @apply space-y-4;
+  }
+
+  .page-stack-comfortable {
+    @apply space-y-6;
+  }
+
+  .page-stack-spacious {
+    @apply space-y-8;
+  }
+
+  .section-stack-compact {
+    @apply space-y-3;
+  }
+
+  .section-stack-comfortable {
+    @apply space-y-4;
+  }
+
+  /* —— Empty state —— */
+  .empty-state-shell {
+    @apply flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-12 text-center;
+  }
+
+  .empty-state-icon {
+    @apply flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary;
+  }
+
+  .empty-state-icon-muted {
+    @apply flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground;
+  }
+
+  .empty-state-icon-destructive {
+    @apply flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive;
+  }
+}
